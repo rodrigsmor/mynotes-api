@@ -9,13 +9,17 @@ import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
 import com.rm.mynotes.utils.dto.requests.LoginDTO;
 import com.rm.mynotes.utils.dto.requests.SignupDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
     private final JwtService jwtService;
@@ -46,17 +50,29 @@ public class AuthService {
     public ResponseEntity<ResponseDTO> login(LoginDTO loginDTO) {
         ResponseDTO responseDTO = new ResponseDTO();
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
+            var user = userRepository.findByEmail(loginDTO.getEmail()).orElseThrow();
 
-        var user = userRepository.findByEmail(loginDTO.getEmail()).orElseThrow();
 
-        userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+            userRepository.save(user);
+            var jwtToken = jwtService.generateToken(user);
 
-        responseDTO.setMessage("Você se conectou com a sua conta!");
-        responseDTO.setSuccess(true);
-        responseDTO.setData(AuthResponseDTO.builder().token(jwtToken).build());
+            responseDTO.setMessage("Você se conectou com a sua conta!");
+            responseDTO.setSuccess(true);
+            responseDTO.setData(AuthResponseDTO.builder().token(jwtToken).build());
 
-        return ResponseEntity.ok(responseDTO);
+            return ResponseEntity.ok(responseDTO);
+        } catch (BadCredentialsException exception) {
+            responseDTO.setSuccess(false);
+            responseDTO.setMessage(exception.getMessage());
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
+        } catch (Exception exception) {
+            responseDTO.setSuccess(false);
+            responseDTO.setMessage(exception.getMessage());
+            responseDTO.setData(exception.getLocalizedMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDTO);
+        }
     }
 }
