@@ -10,10 +10,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,10 +26,24 @@ public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
+    @NotNull
+    @NotEmpty
+    @Column(nullable = false)
     private String fullName;
-    private String firstName;
-    private String lastName;
+
+    @Email
+    @NotNull
+    @NotBlank
+    @NotEmpty
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @NotNull
+    @NotBlank
+    @NotEmpty
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)

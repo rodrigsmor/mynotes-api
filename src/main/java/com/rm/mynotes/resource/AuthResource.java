@@ -1,6 +1,6 @@
 package com.rm.mynotes.resource;
 
-import com.rm.mynotes.service.AuthService;
+import com.rm.mynotes.service.mold.AuthService;
 import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
 import com.rm.mynotes.utils.dto.requests.LoginDTO;
 import com.rm.mynotes.utils.dto.requests.SignupDTO;
