@@ -21,9 +21,13 @@ import java.util.HashMap;
 @Component
 @RequiredArgsConstructor
 public class AnnotationMethods {
+    @Autowired
     private UserRepository userRepository;
+
+    @Autowired
     private AnnotationRepository annotationRepository;
 
+    @Autowired
     private CommonFunctions commonFunctions;
 
     @Autowired
@@ -34,6 +38,8 @@ public class AnnotationMethods {
 
         String coverUrl = this.uploadAnnotationImage(annotationDTO.getCover(), FileTypes.NOTE_COVER);
         String thumbnailUrl = this.uploadAnnotationImage(annotationDTO.getThumbnail(), FileTypes.NOTE_THUMBNAIL);
+
+        log.info("COVER: " + coverUrl + " - THUMBNAIL: " + thumbnailUrl);
 
         if (coverUrl == "error" || thumbnailUrl == "error") throw new CustomExceptions("Erro ao salvar imagem!");
 

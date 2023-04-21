@@ -5,9 +5,11 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.cloud.StorageClient;
 import com.rm.mynotes.utils.constants.FileTypes;
 import com.rm.mynotes.utils.functions.CommonFunctions;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class FirebaseConfig {
@@ -40,6 +43,8 @@ public class FirebaseConfig {
                 .build();
 
         FirebaseApp.initializeApp();
+
+        Bucket bucket = StorageClient.getInstance().bucket();
     }
 
     public HashMap<String, Object> uploadImage(MultipartFile multipartFile, FileTypes type) throws IOException {
@@ -73,6 +78,7 @@ public class FirebaseConfig {
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).setProjectId(FIREBASE_BUCKET_NAME).build().getService();
 
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+        log.info("chegou");
 
         return String.format(
                 DOWNLOAD_URL,
