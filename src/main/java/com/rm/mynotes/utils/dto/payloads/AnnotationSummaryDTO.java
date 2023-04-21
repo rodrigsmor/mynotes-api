@@ -23,6 +23,9 @@ public class AnnotationSummaryDTO {
         this.category = annotation.getCategory();
         this.thumbnail = annotation.getThumbnail();
         this.lastUpdate = annotation.getLastUpdate();
-        this.description = annotation.getDescription().substring(0, 185);
+        if(annotation.getDescription().length() > 185)
+            this.description = annotation.getDescription().substring(0, 185);
+        else
+            this.description = annotation.getDescription();
     }
 }

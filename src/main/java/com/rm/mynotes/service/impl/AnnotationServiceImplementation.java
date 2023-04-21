@@ -48,7 +48,7 @@ public class AnnotationServiceImplementation implements AnnotationService {
 
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
-            AnnotationSummaryDTO annotations = (AnnotationSummaryDTO) user.getAnnotations().stream().map(AnnotationSummaryDTO::new);
+            List<AnnotationSummaryDTO> annotations = user.getAnnotations().stream().map(AnnotationSummaryDTO::new).toList();
 
             responseDTO.setSuccess(true);
             responseDTO.setData(annotations);

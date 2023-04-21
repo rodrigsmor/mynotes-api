@@ -4,5 +4,6 @@ public class RoutePaths {
     public static final String LOGIN = "/api/auth/login";
     public static final String SIGNUP = "/api/auth/signup";
     public static final String GET_NOTE = "/api/note/{id}";
+    public static final String GET_ALL_NOTES = "/api/notes/all";
     public static final String CREATE_NOTE = "/api/note/create";
 }

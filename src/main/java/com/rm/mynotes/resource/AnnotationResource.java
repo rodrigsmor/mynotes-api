@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -22,6 +19,16 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping
 public class AnnotationResource {
     private final AnnotationService annotationService;
+
+    @GetMapping(RoutePaths.GET_ALL_NOTES)
+    public ResponseEntity<ResponseDTO> getAllNotes(Authentication authentication) {
+        return annotationService.getAllAnnotations(authentication);
+    }
+
+    @GetMapping(RoutePaths.GET_NOTE)
+    public ResponseEntity<ResponseDTO> getAnnotation(Authentication authentication, @PathVariable Long id) {
+        return annotationService.getAnnotation(authentication, id);
+    }
 
     @PostMapping(RoutePaths.CREATE_NOTE)
     public ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, @RequestParam(required = false) MultipartFile cover, @RequestParam(required = false) MultipartFile thumbnail, @RequestParam(value = "data") String data) {

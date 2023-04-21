@@ -5,6 +5,8 @@ spring:
       max-request-size: 300MB
   config:
     import: optional:file:.env[.properties]
+  sql:
+    init-mode: always
   datasource:
     url: ${DB_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -17,5 +19,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
+    defer-datasource-initialization: true
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
