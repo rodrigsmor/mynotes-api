@@ -5,7 +5,8 @@ import com.rm.mynotes.model.UserEntity;
 import com.rm.mynotes.repository.AnnotationRepository;
 import com.rm.mynotes.repository.UserRepository;
 import com.rm.mynotes.service.mold.AnnotationService;
-import com.rm.mynotes.utils.CustomExceptions;
+import com.rm.mynotes.utils.dto.payloads.AnnotationSummaryDTO;
+import com.rm.mynotes.utils.errors.CustomExceptions;
 import com.rm.mynotes.utils.constants.RoutePaths;
 import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
 import com.rm.mynotes.utils.dto.requests.AnnotationDTO;
@@ -21,8 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Service
@@ -42,6 +43,43 @@ public class AnnotationServiceImplementation implements AnnotationService {
     private final UserRepository userRepository;
 
     @Override
+    public ResponseEntity<ResponseDTO> getAllAnnotations(Authentication authentication) {
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+            AnnotationSummaryDTO annotations = (AnnotationSummaryDTO) user.getAnnotations().stream().map(AnnotationSummaryDTO::new);
+
+            responseDTO.setSuccess(true);
+            responseDTO.setData(annotations);
+
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception exception) {
+            return commonFunctions.errorHandling(exception);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> getAnnotation(Authentication authentication, Long noteId) {
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+            boolean belongsToTheUser = user.getAnnotations().stream().anyMatch(annotation -> Objects.equals(annotation.getId(), noteId));
+            if (!belongsToTheUser) throw new Error("A anotação informada não pertence ao seu usuário.");
+
+            Annotation annotation = annotationRepository.getReferenceById(noteId);
+
+            responseDTO.setSuccess(true);
+            responseDTO.setData(annotation);
+
+            return ResponseEntity.accepted().body(responseDTO);
+        } catch (Exception exception) {
+            return commonFunctions.errorHandling(exception);
+        }
+    }
+
+    @Override
     public ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, AnnotationDTO annotationDTO) {
         ResponseDTO responseDTO = new ResponseDTO();
 
@@ -50,7 +88,6 @@ public class AnnotationServiceImplementation implements AnnotationService {
             List<Annotation> annotations = user.getAnnotations();
 
             Annotation annotationCreated = annotationMethods.createAnnotation(annotationDTO);
-            log.info("passou: " + annotationCreated.getId());
 
             annotations.add(annotationCreated);
             user.setAnnotations(annotations);
@@ -69,10 +106,7 @@ public class AnnotationServiceImplementation implements AnnotationService {
             
             return ResponseEntity.internalServerError().body(responseDTO);
         } catch (Exception exception) {
-            responseDTO.setSuccess(false);
-            responseDTO.setMessage(exception.getMessage());
-
-            return ResponseEntity.badRequest().body(responseDTO);
+            return commonFunctions.errorHandling(exception);
         }
     }
 }

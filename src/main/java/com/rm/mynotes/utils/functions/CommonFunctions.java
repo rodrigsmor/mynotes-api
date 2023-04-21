@@ -32,6 +32,15 @@ public class CommonFunctions {
         return userRepository.getReferenceByEmail(authentication.getName());
     }
 
+    public static ResponseEntity<ResponseDTO> errorHandling(Exception exception) {
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        responseDTO.setSuccess(false);
+        responseDTO.setMessage(exception.getMessage());
+
+        return ResponseEntity.badRequest().body(responseDTO);
+    }
+
     public static String formatFilename(MultipartFile file, FileTypes type) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         String random = UUID.randomUUID().toString().replaceAll("_", "");
