@@ -37,6 +37,7 @@ public class CommonFunctions {
 
         responseDTO.setSuccess(false);
         responseDTO.setMessage(exception.getMessage());
+        responseDTO.setData(exception.getLocalizedMessage());
 
         return ResponseEntity.badRequest().body(responseDTO);
     }

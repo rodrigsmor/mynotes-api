@@ -1,7 +1,7 @@
 package com.rm.mynotes.utils.dto.payloads;
 
 import com.rm.mynotes.model.Annotation;
-import com.rm.mynotes.utils.constants.Category;
+import com.rm.mynotes.utils.constants.CategoryTypes;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
@@ -11,9 +11,10 @@ public class AnnotationSummaryDTO {
     private Long id;
     private String title;
     private String description;
-    private Category category;
+    private CategoryTypes category;
     private String thumbnail;
     private String cover;
+    private OffsetDateTime createdAt;
     private OffsetDateTime lastUpdate;
 
     public AnnotationSummaryDTO(Annotation annotation) {
@@ -21,6 +22,7 @@ public class AnnotationSummaryDTO {
         this.title = annotation.getTitle();
         this.cover = annotation.getCover();
         this.category = annotation.getCategory();
+        this.createdAt = annotation.getCreatedAt();
         this.thumbnail = annotation.getThumbnail();
         this.lastUpdate = annotation.getLastUpdate();
         if(annotation.getDescription().length() > 185)
