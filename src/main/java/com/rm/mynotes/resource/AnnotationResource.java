@@ -43,16 +43,23 @@ public class AnnotationResource {
 
     @PostMapping(RoutePaths.CREATE_NOTE)
     public ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, @RequestParam(required = false) MultipartFile cover, @RequestParam(required = false) MultipartFile icon, @RequestParam(value = "data") String data) {
+        AnnotationDTO annotationDTO = convertStringIntoObject(data, cover, icon);
+        return annotationService.createAnnotation(authentication, annotationDTO);
+    }
+
+    private AnnotationDTO convertStringIntoObject(String objectString, MultipartFile cover, MultipartFile icon) {
         ObjectMapper objectMapper = new ObjectMapper();
         AnnotationDTO annotationDTO = null;
+
         try {
-            annotationDTO = objectMapper.readValue(data, AnnotationDTO.class);
+            annotationDTO = objectMapper.readValue(objectString, AnnotationDTO.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+
         annotationDTO.setCover(cover);
         annotationDTO.setIcon(icon);
 
-        return annotationService.createAnnotation(authentication, annotationDTO);
+        return annotationDTO;
     }
 }

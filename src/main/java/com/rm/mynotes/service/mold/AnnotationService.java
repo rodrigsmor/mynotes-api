@@ -7,7 +7,6 @@ import com.rm.mynotes.utils.dto.requests.AnnotationDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
-import java.util.Date;
 import java.util.List;
 
 public interface AnnotationService {
