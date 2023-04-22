@@ -43,14 +43,12 @@ public class AnnotationMethods {
         Annotation annotation = new Annotation(annotationDTO);
 
         String coverUrl = this.uploadAnnotationImage(annotationDTO.getCover(), FileTypes.NOTE_COVER);
-        String thumbnailUrl = this.uploadAnnotationImage(annotationDTO.getThumbnail(), FileTypes.NOTE_THUMBNAIL);
+        String iconUrl = this.uploadAnnotationImage(annotationDTO.getCover(), FileTypes.NOTE_ICON);
 
-        log.info("COVER: " + coverUrl + " - THUMBNAIL: " + thumbnailUrl);
+        if (coverUrl == "error" || coverUrl == "error") throw new CustomExceptions("Erro ao salvar imagem!");
 
-        if (coverUrl == "error" || thumbnailUrl == "error") throw new CustomExceptions("Erro ao salvar imagem!");
-
-        annotation.setCover(thumbnailUrl);
-        annotation.setThumbnail(thumbnailUrl);
+        annotation.setCover(coverUrl);
+        annotation.setIcon(coverUrl);
 
         return annotationRepository.save(annotation);
     }

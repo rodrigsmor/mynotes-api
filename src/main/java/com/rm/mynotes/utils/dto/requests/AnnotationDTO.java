@@ -14,7 +14,7 @@ public class AnnotationDTO {
     private String description = "";
     private CategoryTypes category = CategoryTypes.OTHER;
     private MultipartFile cover;
-    private MultipartFile thumbnail;
+    private MultipartFile icon;
 
     public AnnotationDTO(String title, String description, CategoryTypes category) {
         this.title = title;

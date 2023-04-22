@@ -33,7 +33,7 @@ public class Annotation {
     @Enumerated(EnumType.STRING)
     private CategoryTypes category;
 
-    private String thumbnail;
+    private String icon;
 
     private String cover;
 

@@ -42,7 +42,7 @@ public class AnnotationResource {
     }
 
     @PostMapping(RoutePaths.CREATE_NOTE)
-    public ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, @RequestParam(required = false) MultipartFile cover, @RequestParam(required = false) MultipartFile thumbnail, @RequestParam(value = "data") String data) {
+    public ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, @RequestParam(required = false) MultipartFile cover, @RequestParam(required = false) MultipartFile icon, @RequestParam(value = "data") String data) {
         ObjectMapper objectMapper = new ObjectMapper();
         AnnotationDTO annotationDTO = null;
         try {
@@ -51,7 +51,7 @@ public class AnnotationResource {
             throw new RuntimeException(e);
         }
         annotationDTO.setCover(cover);
-        annotationDTO.setThumbnail(thumbnail);
+        annotationDTO.setIcon(icon);
 
         return annotationService.createAnnotation(authentication, annotationDTO);
     }

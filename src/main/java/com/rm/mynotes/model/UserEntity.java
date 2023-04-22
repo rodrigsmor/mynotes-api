@@ -56,6 +56,12 @@ public class UserEntity implements UserDetails {
     )
     private List<Annotation> annotations = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_collections", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "collection_id", referencedColumnName = "id")
+    )
+    private List<CollectionNotes> collections = new ArrayList<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
