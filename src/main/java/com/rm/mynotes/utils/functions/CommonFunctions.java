@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Type;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -23,6 +24,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CommonFunctions {
     private final UserRepository userRepository;
+
+    public static Date convertStringToDate(String dateString) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.parse(dateString);
+    }
 
     public static OffsetDateTime getCurrentDatetime() {
         return OffsetDateTime.now().atZoneSameInstant(ZoneId.of("Z")).toOffsetDateTime();
@@ -37,6 +43,7 @@ public class CommonFunctions {
 
         responseDTO.setSuccess(false);
         responseDTO.setMessage(exception.getMessage());
+        responseDTO.setData(exception.getLocalizedMessage());
 
         return ResponseEntity.badRequest().body(responseDTO);
     }

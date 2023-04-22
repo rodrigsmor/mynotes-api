@@ -1,6 +1,6 @@
 package com.rm.mynotes.model;
 
-import com.rm.mynotes.utils.constants.Category;
+import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.dto.requests.AnnotationDTO;
 import com.rm.mynotes.utils.functions.CommonFunctions;
 import jakarta.persistence.*;
@@ -31,7 +31,7 @@ public class Annotation {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private Category category;
+    private CategoryTypes category;
 
     private String thumbnail;
 
