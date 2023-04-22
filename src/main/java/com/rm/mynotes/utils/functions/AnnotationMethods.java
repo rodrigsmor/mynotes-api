@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @Slf4j
@@ -53,17 +55,28 @@ public class AnnotationMethods {
         return annotationRepository.save(annotation);
     }
 
-    public List<AnnotationSummaryDTO> sortAndFilterAnnotations(UserEntity user, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy) throws ClassCastException {
+    public List<AnnotationSummaryDTO> sortAndFilterAnnotations(UserEntity user, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, String endDateString, String startDateString) throws ClassCastException, ParseException {
         List<AnnotationSummaryDTO> userAnnotations = new java.util.ArrayList<>(user.getAnnotations().stream().map(AnnotationSummaryDTO::new).toList());
-        if(categories != null) userAnnotations = userAnnotations.stream().filter(noteSummary -> categories.stream().anyMatch(category -> category.name().equals(noteSummary.getCategory().name()))).toList();
+
+        if(ordination.equals("DESC")) Collections.reverse(userAnnotations);
 
         switch (orderBy) {
             case title -> userAnnotations.sort(Comparator.comparing(AnnotationSummaryDTO::getTitle));
             case lastUpdate -> userAnnotations.sort(Comparator.comparing(AnnotationSummaryDTO::getLastUpdate));
-            default -> userAnnotations.sort(Comparator.comparing(AnnotationSummaryDTO::getCreatedAt));
+            case createdAt -> userAnnotations.sort(Comparator.comparing(AnnotationSummaryDTO::getCreatedAt));
         }
 
-        if(ordination.equals("DESC")) Collections.reverse(userAnnotations);
+        if(categories != null) userAnnotations = userAnnotations.stream().filter(noteSummary -> categories.stream().anyMatch(category -> category.name().equals(noteSummary.getCategory().name()))).toList();
+
+        if(endDateString != null && !endDateString.isEmpty()) {
+            Date endDate = CommonFunctions.convertStringToDate(endDateString);
+            userAnnotations = userAnnotations.stream().filter(annotation -> endDate.toInstant().isAfter(annotation.getLastUpdate().toInstant())).toList();
+        }
+
+        if(startDateString != null && !startDateString.isEmpty()) {
+            Date startDate = CommonFunctions.convertStringToDate(startDateString);
+            userAnnotations = userAnnotations.stream().filter(annotation -> startDate.toInstant().isBefore(annotation.getLastUpdate().toInstant())).toList();
+        }
 
         return userAnnotations;
     }

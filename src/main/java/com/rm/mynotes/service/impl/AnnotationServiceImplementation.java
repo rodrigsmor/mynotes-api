@@ -29,6 +29,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,14 +53,14 @@ public class AnnotationServiceImplementation implements AnnotationService {
     private final Integer pageElementsSize = 16;
 
     @Override
-    public ResponseEntity<ResponseDTO> getAllAnnotations(Authentication authentication, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, Integer currentPage) {
+    public ResponseEntity<ResponseDTO> getAllAnnotations(Authentication authentication, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, Integer currentPage, String endDate, String startDate) {
         ResponseDTO responseDTO = new ResponseDTO();
 
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
 
             PageRequest pageRequest = PageRequest.of(currentPage, pageElementsSize);
-            List<AnnotationSummaryDTO> annotations = annotationMethods.sortAndFilterAnnotations(user, ordination, categories, orderBy);
+            List<AnnotationSummaryDTO> annotations = annotationMethods.sortAndFilterAnnotations(user, ordination, categories, orderBy, endDate, startDate);
 
             int startIndex = (int) pageRequest.getOffset();
             int endIndex = Math.min(startIndex + pageRequest.getPageSize(), annotations.size());
