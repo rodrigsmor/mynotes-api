@@ -1,10 +1,8 @@
 package com.rm.mynotes.utils.dto.requests;
 
 import com.rm.mynotes.model.Annotation;
-import com.rm.mynotes.model.CollectionNotes;
 import com.rm.mynotes.utils.constants.CategoryTypes;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;

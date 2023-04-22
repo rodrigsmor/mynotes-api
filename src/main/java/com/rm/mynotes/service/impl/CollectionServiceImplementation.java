@@ -11,7 +11,6 @@ import com.rm.mynotes.utils.functions.CollectionMethods;
 import com.rm.mynotes.utils.functions.CommonFunctions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +58,7 @@ public class CollectionServiceImplementation implements CollectionService {
 
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
-            HashSet<CollectionNotes> userCollections = user.getCollections();
+            Set<CollectionNotes> userCollections = user.getCollections();
             CollectionNotes collection = collectionMethods.createCollections(collectionDTO, cover);
 
             userCollections.add(collection);

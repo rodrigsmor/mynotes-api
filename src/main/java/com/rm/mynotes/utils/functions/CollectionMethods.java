@@ -8,25 +8,30 @@ import com.rm.mynotes.utils.config.FirebaseConfig;
 import com.rm.mynotes.utils.constants.FileTypes;
 import com.rm.mynotes.utils.dto.requests.CollectionDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
 
+@Component
 @RequiredArgsConstructor
 public class CollectionMethods {
+    @Autowired
     private FirebaseConfig firebaseConfig;
+
+    @Autowired
     private CollectionRepository collectionRepository;
 
     @Value("${DEFAULT_COLLECTION_COVER}")
-    private final String DEFAULT_COLLECTION_COVER;
-
+    private String DEFAULT_COLLECTION_COVER;
 
     public CollectionNotes createCollections(CollectionDTO collectionDTO, MultipartFile cover) throws IOException {
         CollectionNotes collection = new CollectionNotes(collectionDTO);
 
-        if (cover != null || cover.isEmpty()) collection.setCoverUrl(DEFAULT_COLLECTION_COVER);
+        if (cover == null) collection.setCoverUrl(DEFAULT_COLLECTION_COVER);
         else {
             HashMap<String, Object> response = firebaseConfig.uploadImage(cover, FileTypes.COLLECTION_COVER);
             if ((Boolean) response.get("success")) collection.setCoverUrl((String) response.get("imageUrl"));

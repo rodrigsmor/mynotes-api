@@ -11,10 +11,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @Builder
 @Getter
@@ -61,7 +58,7 @@ public class UserEntity implements UserDetails {
     @JoinTable(name = "user_collections", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "collection_id", referencedColumnName = "id")
     )
-    private HashSet<CollectionNotes> collections = new HashSet<>();
+    private Set<CollectionNotes> collections = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
