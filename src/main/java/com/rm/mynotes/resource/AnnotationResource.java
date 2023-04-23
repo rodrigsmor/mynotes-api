@@ -25,6 +25,12 @@ import java.util.List;
 public class AnnotationResource {
     private final AnnotationService annotationService;
 
+    @PatchMapping(RoutePaths.ADD_NOTE_TO_COLLECTION)
+    public ResponseEntity<ResponseDTO> addsNotesToCollection(Authentication authentication, @PathVariable Long noteId, @PathVariable Long collectionId) {
+        log.info("chegou");
+        return annotationService.addsAnnotationToCollection(authentication, noteId, collectionId);
+    }
+
     @GetMapping(RoutePaths.GET_ALL_NOTES)
     public ResponseEntity<ResponseDTO> getAllNotes(Authentication authentication,
                                                    @RequestParam(required = false, name = "current_page", defaultValue = "0") Integer currentPage,

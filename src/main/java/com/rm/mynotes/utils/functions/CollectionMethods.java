@@ -52,4 +52,8 @@ public class CollectionMethods {
 
         return collectionDTO;
     }
+
+    public Integer getAmountOfAnnotationsInCollection(Long collectionId) {
+        return collectionRepository.getAmountOfAnnotationsInCollection(collectionId);
+    }
 }
