@@ -5,7 +5,10 @@ import com.rm.mynotes.model.UserEntity;
 import com.rm.mynotes.repository.CollectionRepository;
 import com.rm.mynotes.repository.UserRepository;
 import com.rm.mynotes.service.mold.CollectionService;
+import com.rm.mynotes.utils.constants.CategoryTypes;
+import com.rm.mynotes.utils.constants.OrdinationTypes;
 import com.rm.mynotes.utils.constants.RoutePaths;
+import com.rm.mynotes.utils.dto.payloads.AnnotationSummaryDTO;
 import com.rm.mynotes.utils.dto.payloads.CollectionSummaryDTO;
 import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
 import com.rm.mynotes.utils.dto.requests.CollectionDTO;
@@ -15,6 +18,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -37,10 +43,32 @@ public class CollectionServiceImplementation implements CollectionService {
     @Autowired
     private CollectionMethods collectionMethods;
     private final CollectionRepository collectionRepository;
+    private final Integer pageElementsSize = 16;
 
     @Override
-    public ResponseEntity<ResponseDTO> getFavorites(Authentication authentication) {
+    public ResponseEntity<ResponseDTO> getPinnedCollections(Authentication authentication) {
         return null;
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> getCollections(Authentication authentication, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, Integer currentPage) {
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+
+            PageRequest pageRequest = PageRequest.of(currentPage, pageElementsSize);
+            List<CollectionSummaryDTO> collections = collectionMethods.sortAndFilterCollections(user, ordination, categories, orderBy);
+
+            int startIndex = (int) pageRequest.getOffset();
+            int endIndex = Math.min(startIndex + pageRequest.getPageSize(), collections.size());
+            List<CollectionSummaryDTO> pageElements = collections.subList(startIndex, endIndex);
+
+            Page<CollectionSummaryDTO> paginatedCollections = new PageImpl<>(pageElements, pageRequest, collections.size());
+
+            ResponseDTO responseDTO = new ResponseDTO("", true, paginatedCollections);
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
     }
 
     @Override
@@ -96,11 +124,6 @@ public class CollectionServiceImplementation implements CollectionService {
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
         }
-    }
-
-    @Override
-    public ResponseEntity<ResponseDTO> getCollections(Authentication authentication, Integer pageNumber) {
-        return null;
     }
 
     @Override

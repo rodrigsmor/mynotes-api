@@ -3,9 +3,14 @@ package com.rm.mynotes.utils.functions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rm.mynotes.model.CollectionNotes;
+import com.rm.mynotes.model.UserEntity;
 import com.rm.mynotes.repository.CollectionRepository;
 import com.rm.mynotes.utils.config.FirebaseConfig;
+import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.constants.FileTypes;
+import com.rm.mynotes.utils.constants.OrdinationTypes;
+import com.rm.mynotes.utils.dto.payloads.AnnotationSummaryDTO;
+import com.rm.mynotes.utils.dto.payloads.CollectionSummaryDTO;
 import com.rm.mynotes.utils.dto.requests.CollectionDTO;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -57,7 +62,22 @@ public class CollectionMethods {
     }
 
     public Integer getAmountOfAnnotationsInCollection(Long collectionId) {
-        log.info("aqui + " + collectionId);
         return collectionRepository.getAmountOfAnnotationsInCollection(collectionId);
+    }
+
+    public List<CollectionSummaryDTO> sortAndFilterCollections(UserEntity user, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy) {
+        List<CollectionSummaryDTO> userCollections = new ArrayList<>(user.getCollections().stream().map(CollectionSummaryDTO::new).toList());
+
+        if (ordination.equals("DESC")) Collections.reverse(userCollections);
+
+        if (Objects.requireNonNull(orderBy) == OrdinationTypes.name) {
+            userCollections.sort(Comparator.comparing(CollectionSummaryDTO::getName));
+        } else {
+            userCollections.sort(Comparator.comparing(CollectionSummaryDTO::getId));
+        }
+
+        if (categories != null) userCollections = userCollections.stream().filter(collectionSummary -> categories.stream().anyMatch(category -> category.name().equals(collectionSummary.getCategory().name()))).toList();
+
+        return userCollections;
     }
 }
