@@ -48,7 +48,22 @@ public class CollectionServiceImplementation implements CollectionService {
 
     @Override
     public ResponseEntity<ResponseDTO> getPinnedCollections(Authentication authentication) {
-        return null;
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+
+            CollectionNotes collection = user.getCollections().stream().filter(CollectionNotes::getIsPinned).findFirst().get();
+            CollectionSummaryDTO collectionSummary = new CollectionSummaryDTO(collection);
+            collectionSummary.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collection.getId()));
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("annotations", collection.getAnnotations());
+            data.put("collection", collectionSummary);
+
+            ResponseDTO responseDTO = new ResponseDTO("", true, data);
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
     }
 
     @Override
@@ -80,11 +95,13 @@ public class CollectionServiceImplementation implements CollectionService {
 
             CollectionNotes collection = collectionRepository.getReferencedById(id);
             CollectionSummaryDTO collectionSummaryDTO = new CollectionSummaryDTO(collection);
+            collectionSummaryDTO.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collection.getId()));
+
             Set<AnnotationSummaryDTO> annotations = collection.getAnnotations().stream().map(AnnotationSummaryDTO::new).collect(Collectors.toSet());
 
             Map<String, Object> data = new HashMap<>();
             data.put("annotations", annotations);
-            data.put("collection", collection);
+            data.put("collection", collectionSummaryDTO);
 
             ResponseDTO responseDTO = new ResponseDTO("", true, data);
             return ResponseEntity.ok().body(responseDTO);

@@ -6,9 +6,10 @@ public class RoutePaths {
     public static final String GET_NOTE = "/api/note/{id}";
     public static final String GET_ALL_NOTES = "/api/notes/all";
     public static final String CREATE_NOTE = "/api/note/create";
-    public static final String COLLECTION = "/api/collection/{collectionId}";
     public static final String GET_FAVORITES = "/api/collection/favorites";
     public static final String GET_ALL_COLLECTIONS = "/api/collections/all";
+    public static final String COLLECTION = "/api/collection/{collectionId}";
     public static final String CREATE_NEW_COLLECTION = "/api/collection/new";
+    public static final String GET_PINNED_COLLECTIONS = "/api/collection/pinned";
     public static final String NOTE_TO_COLLECTION = "/api/note/{noteId}/collection/{collectionId}";
 }
