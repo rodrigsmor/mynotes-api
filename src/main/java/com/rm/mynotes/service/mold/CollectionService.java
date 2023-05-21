@@ -11,5 +11,6 @@ public interface CollectionService {
     ResponseEntity<ResponseDTO> getCollection(Authentication authentication, Long collectionId);
     ResponseEntity<ResponseDTO> deleteCollection(Authentication authentication, Long collectionId);
     ResponseEntity<ResponseDTO> getCollections(Authentication authentication, Integer pageNumber);
+    ResponseEntity<ResponseDTO> editCollection(Authentication authentication, Long collectionId, CollectionDTO collectionDTO);
     ResponseEntity<ResponseDTO> createCollection(Authentication authentication, MultipartFile cover, CollectionDTO collectionDTO);
 }

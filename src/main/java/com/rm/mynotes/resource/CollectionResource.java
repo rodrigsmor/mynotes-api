@@ -30,4 +30,9 @@ public class CollectionResource {
     public ResponseEntity<ResponseDTO> deleteCollection(Authentication authentication, @PathVariable("collectionId") Long collectionId) {
         return collectionService.deleteCollection(authentication, collectionId);
     }
+
+    @PutMapping(RoutePaths.COLLECTION)
+    public ResponseEntity<ResponseDTO> editCollection(Authentication authentication, @PathVariable("collectionId") Long collectionId, @RequestBody CollectionDTO collectionDTO) {
+        return collectionService.editCollection(authentication, collectionId, collectionDTO);
+    }
 }

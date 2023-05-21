@@ -6,6 +6,7 @@ import com.rm.mynotes.repository.CollectionRepository;
 import com.rm.mynotes.repository.UserRepository;
 import com.rm.mynotes.service.mold.CollectionService;
 import com.rm.mynotes.utils.constants.RoutePaths;
+import com.rm.mynotes.utils.dto.payloads.CollectionSummaryDTO;
 import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
 import com.rm.mynotes.utils.dto.requests.CollectionDTO;
 import com.rm.mynotes.utils.functions.CollectionMethods;
@@ -21,10 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -48,6 +46,29 @@ public class CollectionServiceImplementation implements CollectionService {
     @Override
     public ResponseEntity<ResponseDTO> getCollection(Authentication authentication, Long id) {
         return null;
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> editCollection(Authentication authentication, Long collectionId, CollectionDTO collectionDTO) {
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+            if (userRepository.getCollectionBelongsToUser(user.getId(), collectionId) == 0) throw new Exception("A coleção informada não pertence ao usuário atual ou não existe!");
+
+            CollectionNotes existingCollection = collectionRepository.findById(collectionId)
+                    .orElseThrow(() -> new Exception("A coleção informada não existe!"));
+
+            existingCollection.setName(Objects.nonNull(collectionDTO.getName()) ? collectionDTO.getName() : existingCollection.getName());
+            existingCollection.setIsPinned(Objects.nonNull(collectionDTO.getIsPinned()) ? collectionDTO.getIsPinned() : existingCollection.getIsPinned());
+            existingCollection.setCategory(Objects.nonNull(collectionDTO.getCategory()) ? collectionDTO.getCategory() : existingCollection.getCategory());
+
+            CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(existingCollection));
+            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collectionUpdated.getId()));
+
+            ResponseDTO responseDTO = new ResponseDTO("Coleção atualizada com sucesso.", true, collectionUpdated);
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
     }
 
     @Override
