@@ -25,9 +25,14 @@ import java.util.List;
 public class AnnotationResource {
     private final AnnotationService annotationService;
 
-    @PatchMapping(RoutePaths.ADD_NOTE_TO_COLLECTION)
-    public ResponseEntity<ResponseDTO> addsNotesToCollection(Authentication authentication, @PathVariable("noteId") Long noteId, @PathVariable("collectionId") Long collectionId) {
+    @PatchMapping(RoutePaths.NOTE_TO_COLLECTION)
+    public ResponseEntity<ResponseDTO> addsNoteToCollection(Authentication authentication, @PathVariable("noteId") Long noteId, @PathVariable("collectionId") Long collectionId) {
         return annotationService.addsAnnotationToCollection(authentication, noteId, collectionId);
+    }
+
+    @DeleteMapping(RoutePaths.NOTE_TO_COLLECTION)
+    public  ResponseEntity<ResponseDTO> removeNoteFromCollection(Authentication authentication, @PathVariable("noteId") Long noteId, @PathVariable("collectionId") Long collectionId) {
+        return annotationService.removeAnnotationFromCollection(authentication, noteId, collectionId);
     }
 
     @GetMapping(RoutePaths.GET_ALL_NOTES)

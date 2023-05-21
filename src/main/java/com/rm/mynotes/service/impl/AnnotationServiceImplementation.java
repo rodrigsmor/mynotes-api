@@ -61,15 +61,11 @@ public class AnnotationServiceImplementation implements AnnotationService {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
 
-            log.info("annotation Belongs to user? " + userRepository.getAnnotationBelongsToUser(user.getId(), noteId));
-            log.info("Annotations already exists on collection? " + collectionRepository.existsOnCollection(collectionId, noteId));
-
-            if (collectionRepository.existsOnCollection(noteId, collectionId) > 0) throw new Exception("A anotação já foi adicionada a coleção.");
-            if (userRepository.getAnnotationBelongsToUser(user.getId(), noteId) == 0) throw new Exception("A anotação informada não pertence ao usuário atual!");
-            if (userRepository.getCollectionBelongsToUser(user.getId(), collectionId) == 0) throw new Exception("A coleção informada não pertence ao usuário atual ou não existe!");
-
             Annotation annotation = annotationRepository.getReferenceById(noteId);
             CollectionNotes collection = collectionRepository.getReferencedById(collectionId);
+
+            if (collectionRepository.existsOnCollection(noteId, collectionId) > 0) throw new Exception("A anotação já foi adicionada a coleção.");
+            handleCollectionAnnotationErrors(user.getId(), noteId, collectionId);
 
             List<Annotation> collectionAnnotations = collection.getAnnotations();
             collectionAnnotations.add(annotation);
@@ -88,6 +84,40 @@ public class AnnotationServiceImplementation implements AnnotationService {
             responseDTO.setMessage("A adição foi realizada com êxito!");
 
             return ResponseEntity.accepted().body(responseDTO);
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> removeAnnotationFromCollection(Authentication authentication, Long noteId, Long collectionId) {
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+            Annotation annotation = annotationRepository.getReferenceById(noteId);
+            CollectionNotes collection = collectionRepository.getReferencedById(collectionId);
+
+            handleCollectionAnnotationErrors(user.getId(), noteId, collectionId);
+            if (collectionRepository.existsOnCollection(noteId, collectionId) == 0) throw new Exception("A anotação não existe na coleção informada.");
+
+            List<Annotation> collectionAnnotations = collection.getAnnotations();
+            collectionAnnotations.remove(annotation);
+
+            collection.setAnnotations(collectionAnnotations);
+
+            CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(collection));
+            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collectionUpdated.getId()));
+
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("collection", collectionUpdated);
+
+            responseDTO.setData(data);
+            responseDTO.setSuccess(true);
+            responseDTO.setMessage("A anotação foi removida da coleção.");
+
+            return ResponseEntity.ok().body(responseDTO);
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
         }
@@ -167,5 +197,10 @@ public class AnnotationServiceImplementation implements AnnotationService {
         } catch (Exception exception) {
             return commonFunctions.errorHandling(exception);
         }
+    }
+
+    private void handleCollectionAnnotationErrors(Long userId, Long noteId, Long collectionId) throws Exception {
+        if (userRepository.getAnnotationBelongsToUser(userId, noteId) == 0) throw new Exception("A anotação informada não pertence ao usuário atual!");
+        if (userRepository.getCollectionBelongsToUser(userId, collectionId) == 0) throw new Exception("A coleção informada não pertence ao usuário atual ou não existe!");
     }
 }
