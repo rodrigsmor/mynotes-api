@@ -26,8 +26,7 @@ public class AnnotationResource {
     private final AnnotationService annotationService;
 
     @PatchMapping(RoutePaths.ADD_NOTE_TO_COLLECTION)
-    public ResponseEntity<ResponseDTO> addsNotesToCollection(Authentication authentication, @PathVariable Long noteId, @PathVariable Long collectionId) {
-        log.info("chegou");
+    public ResponseEntity<ResponseDTO> addsNotesToCollection(Authentication authentication, @PathVariable("noteId") Long noteId, @PathVariable("collectionId") Long collectionId) {
         return annotationService.addsAnnotationToCollection(authentication, noteId, collectionId);
     }
 
