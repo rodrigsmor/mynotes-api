@@ -1,12 +1,15 @@
 package com.rm.mynotes.utils.functions;
 
 import com.rm.mynotes.model.Annotation;
+import com.rm.mynotes.model.CollectionNotes;
 import com.rm.mynotes.model.UserEntity;
 import com.rm.mynotes.repository.AnnotationRepository;
+import com.rm.mynotes.repository.CollectionRepository;
 import com.rm.mynotes.repository.UserRepository;
 import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.constants.OrdinationTypes;
 import com.rm.mynotes.utils.dto.payloads.AnnotationSummaryDTO;
+import com.rm.mynotes.utils.dto.payloads.CollectionSummaryDTO;
 import com.rm.mynotes.utils.errors.CustomExceptions;
 import com.rm.mynotes.utils.config.FirebaseConfig;
 import com.rm.mynotes.utils.constants.FileTypes;
@@ -34,6 +37,9 @@ public class AnnotationMethods {
     private AnnotationRepository annotationRepository;
 
     @Autowired
+    private CollectionRepository collectionRepository;
+
+    @Autowired
     private CommonFunctions commonFunctions;
 
     @Autowired
@@ -43,14 +49,12 @@ public class AnnotationMethods {
         Annotation annotation = new Annotation(annotationDTO);
 
         String coverUrl = this.uploadAnnotationImage(annotationDTO.getCover(), FileTypes.NOTE_COVER);
-        String thumbnailUrl = this.uploadAnnotationImage(annotationDTO.getThumbnail(), FileTypes.NOTE_THUMBNAIL);
+        String iconUrl = this.uploadAnnotationImage(annotationDTO.getCover(), FileTypes.NOTE_ICON);
 
-        log.info("COVER: " + coverUrl + " - THUMBNAIL: " + thumbnailUrl);
+        if (coverUrl.equals("error") || iconUrl.equals("error")) throw new CustomExceptions("Erro ao salvar imagem!");
 
-        if (coverUrl == "error" || thumbnailUrl == "error") throw new CustomExceptions("Erro ao salvar imagem!");
-
-        annotation.setCover(thumbnailUrl);
-        annotation.setThumbnail(thumbnailUrl);
+        annotation.setCover(coverUrl);
+        annotation.setIcon(iconUrl);
 
         return annotationRepository.save(annotation);
     }
@@ -79,6 +83,12 @@ public class AnnotationMethods {
         }
 
         return userAnnotations;
+    }
+
+    public List<CollectionSummaryDTO> getCollectionsThatHaveTheAnnotation(Long annotationId) {
+        List<CollectionNotes> collections = collectionRepository.getCollectionsByAnnotation(annotationId);;
+
+        return collections.stream().map(CollectionSummaryDTO::new).toList();
     }
 
     private String uploadAnnotationImage(MultipartFile file, FileTypes type) throws IOException {

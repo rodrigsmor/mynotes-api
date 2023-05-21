@@ -12,7 +12,7 @@ public class AnnotationSummaryDTO {
     private String title;
     private String description;
     private CategoryTypes category;
-    private String thumbnail;
+    private String icon;
     private String cover;
     private OffsetDateTime createdAt;
     private OffsetDateTime lastUpdate;
@@ -23,7 +23,7 @@ public class AnnotationSummaryDTO {
         this.cover = annotation.getCover();
         this.category = annotation.getCategory();
         this.createdAt = annotation.getCreatedAt();
-        this.thumbnail = annotation.getThumbnail();
+        this.icon = annotation.getIcon();
         this.lastUpdate = annotation.getLastUpdate();
         if(annotation.getDescription().length() > 185)
             this.description = annotation.getDescription().substring(0, 185);

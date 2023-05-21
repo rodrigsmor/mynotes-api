@@ -78,7 +78,6 @@ public class FirebaseConfig {
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).setProjectId(FIREBASE_BUCKET_NAME).build().getService();
 
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
-        log.info("chegou");
 
         return String.format(
                 DOWNLOAD_URL,

@@ -1,17 +1,20 @@
 package com.rm.mynotes.service.impl;
 
 import com.rm.mynotes.model.Annotation;
+import com.rm.mynotes.model.CollectionNotes;
 import com.rm.mynotes.model.UserEntity;
 import com.rm.mynotes.repository.AnnotationRepository;
+import com.rm.mynotes.repository.CollectionRepository;
 import com.rm.mynotes.repository.UserRepository;
 import com.rm.mynotes.service.mold.AnnotationService;
 import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.constants.OrdinationTypes;
-import com.rm.mynotes.utils.dto.payloads.AnnotationSummaryDTO;
-import com.rm.mynotes.utils.errors.CustomExceptions;
 import com.rm.mynotes.utils.constants.RoutePaths;
+import com.rm.mynotes.utils.dto.payloads.AnnotationSummaryDTO;
+import com.rm.mynotes.utils.dto.payloads.CollectionSummaryDTO;
 import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
 import com.rm.mynotes.utils.dto.requests.AnnotationDTO;
+import com.rm.mynotes.utils.errors.CustomExceptions;
 import com.rm.mynotes.utils.functions.AnnotationMethods;
 import com.rm.mynotes.utils.functions.CommonFunctions;
 import lombok.Data;
@@ -21,15 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Comparator;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,14 +44,82 @@ public class AnnotationServiceImplementation implements AnnotationService {
 
     @Autowired
     public AnnotationMethods annotationMethods;
-
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private CollectionRepository collectionRepository;
     @Autowired
     public AnnotationRepository annotationRepository;
 
-    @Autowired
-    private final UserRepository userRepository;
-
     private final Integer pageElementsSize = 16;
+
+    @Override
+    public ResponseEntity<ResponseDTO> addsAnnotationToCollection(Authentication authentication, Long noteId, Long collectionId) {
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+
+            Annotation annotation = annotationRepository.getReferenceById(noteId);
+            CollectionNotes collection = collectionRepository.getReferencedById(collectionId);
+
+            if (collectionRepository.existsOnCollection(noteId, collectionId) > 0) throw new Exception("A anotação já foi adicionada a coleção.");
+            handleCollectionAnnotationErrors(user.getId(), noteId, collectionId);
+
+            List<Annotation> collectionAnnotations = collection.getAnnotations();
+            collectionAnnotations.add(annotation);
+
+            collection.setAnnotations(collectionAnnotations);
+
+            CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(collection));
+            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collectionUpdated.getId()));
+
+            HashMap<String, Object> data = new HashMap<>();
+
+            data.put("collection", collectionUpdated);
+
+            responseDTO.setData(data);
+            responseDTO.setSuccess(true);
+            responseDTO.setMessage("A adição foi realizada com êxito!");
+
+            return ResponseEntity.accepted().body(responseDTO);
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> removeAnnotationFromCollection(Authentication authentication, Long noteId, Long collectionId) {
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+            Annotation annotation = annotationRepository.getReferenceById(noteId);
+            CollectionNotes collection = collectionRepository.getReferencedById(collectionId);
+
+            handleCollectionAnnotationErrors(user.getId(), noteId, collectionId);
+            if (collectionRepository.existsOnCollection(noteId, collectionId) == 0) throw new Exception("A anotação não existe na coleção informada.");
+
+            List<Annotation> collectionAnnotations = collection.getAnnotations();
+            collectionAnnotations.remove(annotation);
+
+            collection.setAnnotations(collectionAnnotations);
+
+            CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(collection));
+            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collectionUpdated.getId()));
+
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("collection", collectionUpdated);
+
+            responseDTO.setData(data);
+            responseDTO.setSuccess(true);
+            responseDTO.setMessage("A anotação foi removida da coleção.");
+
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
+    }
 
     @Override
     public ResponseEntity<ResponseDTO> getAllAnnotations(Authentication authentication, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, Integer currentPage, String endDate, String startDate) {
@@ -126,5 +195,10 @@ public class AnnotationServiceImplementation implements AnnotationService {
         } catch (Exception exception) {
             return commonFunctions.errorHandling(exception);
         }
+    }
+
+    private void handleCollectionAnnotationErrors(Long userId, Long noteId, Long collectionId) throws Exception {
+        if (userRepository.getAnnotationBelongsToUser(userId, noteId) == 0) throw new Exception("A anotação informada não pertence ao usuário atual!");
+        if (userRepository.getCollectionBelongsToUser(userId, collectionId) == 0) throw new Exception("A coleção informada não pertence ao usuário atual ou não existe!");
     }
 }

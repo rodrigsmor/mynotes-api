@@ -25,6 +25,16 @@ import java.util.List;
 public class AnnotationResource {
     private final AnnotationService annotationService;
 
+    @PatchMapping(RoutePaths.NOTE_TO_COLLECTION)
+    public ResponseEntity<ResponseDTO> addsNoteToCollection(Authentication authentication, @PathVariable("noteId") Long noteId, @PathVariable("collectionId") Long collectionId) {
+        return annotationService.addsAnnotationToCollection(authentication, noteId, collectionId);
+    }
+
+    @DeleteMapping(RoutePaths.NOTE_TO_COLLECTION)
+    public  ResponseEntity<ResponseDTO> removeNoteFromCollection(Authentication authentication, @PathVariable("noteId") Long noteId, @PathVariable("collectionId") Long collectionId) {
+        return annotationService.removeAnnotationFromCollection(authentication, noteId, collectionId);
+    }
+
     @GetMapping(RoutePaths.GET_ALL_NOTES)
     public ResponseEntity<ResponseDTO> getAllNotes(Authentication authentication,
                                                    @RequestParam(required = false, name = "current_page", defaultValue = "0") Integer currentPage,
@@ -42,17 +52,24 @@ public class AnnotationResource {
     }
 
     @PostMapping(RoutePaths.CREATE_NOTE)
-    public ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, @RequestParam(required = false) MultipartFile cover, @RequestParam(required = false) MultipartFile thumbnail, @RequestParam(value = "data") String data) {
+    public ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, @RequestParam(required = false) MultipartFile cover, @RequestParam(required = false) MultipartFile icon, @RequestParam(value = "data") String data) {
+        AnnotationDTO annotationDTO = convertStringIntoObject(data, cover, icon);
+        return annotationService.createAnnotation(authentication, annotationDTO);
+    }
+
+    private AnnotationDTO convertStringIntoObject(String objectString, MultipartFile cover, MultipartFile icon) {
         ObjectMapper objectMapper = new ObjectMapper();
         AnnotationDTO annotationDTO = null;
+
         try {
-            annotationDTO = objectMapper.readValue(data, AnnotationDTO.class);
+            annotationDTO = objectMapper.readValue(objectString, AnnotationDTO.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        annotationDTO.setCover(cover);
-        annotationDTO.setThumbnail(thumbnail);
 
-        return annotationService.createAnnotation(authentication, annotationDTO);
+        annotationDTO.setCover(cover);
+        annotationDTO.setIcon(icon);
+
+        return annotationDTO;
     }
 }
