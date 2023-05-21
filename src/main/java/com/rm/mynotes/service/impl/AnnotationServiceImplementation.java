@@ -109,7 +109,6 @@ public class AnnotationServiceImplementation implements AnnotationService {
             CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(collection));
             collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collectionUpdated.getId()));
 
-
             HashMap<String, Object> data = new HashMap<>();
             data.put("collection", collectionUpdated);
 

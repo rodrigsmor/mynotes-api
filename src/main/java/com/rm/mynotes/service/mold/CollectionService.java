@@ -8,8 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface CollectionService {
     ResponseEntity<ResponseDTO> getFavorites(Authentication authentication);
-    ResponseEntity<ResponseDTO> getCollection(Authentication authentication, Long id);
-    ResponseEntity<ResponseDTO> deleteCollection(Authentication authentication, Long id);
+    ResponseEntity<ResponseDTO> getCollection(Authentication authentication, Long collectionId);
+    ResponseEntity<ResponseDTO> deleteCollection(Authentication authentication, Long collectionId);
     ResponseEntity<ResponseDTO> getCollections(Authentication authentication, Integer pageNumber);
     ResponseEntity<ResponseDTO> createCollection(Authentication authentication, MultipartFile cover, CollectionDTO collectionDTO);
 }

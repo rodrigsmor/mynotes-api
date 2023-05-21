@@ -34,7 +34,7 @@ public class CollectionNotes {
     @Enumerated(EnumType.STRING)
     private CategoryTypes category;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinTable(name = "collection_notes", joinColumns = @JoinColumn(name = "collection_id"),
         inverseJoinColumns = @JoinColumn(name = "note_id", referencedColumnName = "id")
     )
