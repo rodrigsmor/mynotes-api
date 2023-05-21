@@ -29,6 +29,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -73,7 +74,23 @@ public class CollectionServiceImplementation implements CollectionService {
 
     @Override
     public ResponseEntity<ResponseDTO> getCollection(Authentication authentication, Long id) {
-        return null;
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+            if (userRepository.getCollectionBelongsToUser(user.getId(), id) == 0) throw new Exception("A coleção informada não pertence ao usuário atual ou não existe!");
+
+            CollectionNotes collection = collectionRepository.getReferencedById(id);
+            CollectionSummaryDTO collectionSummaryDTO = new CollectionSummaryDTO(collection);
+            Set<AnnotationSummaryDTO> annotations = collection.getAnnotations().stream().map(AnnotationSummaryDTO::new).collect(Collectors.toSet());
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("annotations", annotations);
+            data.put("collection", collection);
+
+            ResponseDTO responseDTO = new ResponseDTO("", true, data);
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
     }
 
     @Override

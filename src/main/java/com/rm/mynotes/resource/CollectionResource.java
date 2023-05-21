@@ -30,7 +30,7 @@ public class CollectionResource {
     }
 
     @GetMapping(RoutePaths.GET_ALL_COLLECTIONS)
-    public ResponseEntity<ResponseDTO> getCollections(Authentication authentication,
+    public ResponseEntity<ResponseDTO> getAllCollections(Authentication authentication,
                                                       @RequestParam(required = false, name = "current_page", defaultValue = "0") Integer currentPage,
                                                       @RequestParam(required = false, name = "ordination", defaultValue = "ASC") String ordination,
                                                       @RequestParam(required = false, name = "categories") List<CategoryTypes> categories,
