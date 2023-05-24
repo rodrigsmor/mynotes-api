@@ -1,5 +1,7 @@
 package com.rm.mynotes.service.impl;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import com.rm.mynotes.model.Annotation;
 import com.rm.mynotes.model.CollectionNotes;
 import com.rm.mynotes.model.UserEntity;
@@ -53,12 +55,6 @@ public class AnnotationServiceImplementation implements AnnotationService {
     public AnnotationRepository annotationRepository;
 
     private final Integer pageElementsSize = 16;
-
-    @Override
-    @Scheduled(cron = "0 0 0 * * *")
-    public void excludeNotesThatHaveReachedDeadline() {
-
-    }
 
     @Override
     @Transactional

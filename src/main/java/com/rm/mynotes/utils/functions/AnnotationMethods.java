@@ -20,11 +20,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 
@@ -52,6 +55,22 @@ public class AnnotationMethods {
 
     @Value("${DEFAULT_NOTES_COVER}")
     private String DEFAULT_NOTES_COVER;
+
+    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    public void excludeNotesThatHaveReachedDeadline() {
+        OffsetDateTime deadline = OffsetDateTime.now();
+        List<Annotation> annotationsToDelete = annotationRepository.findByDeletionDateBefore(deadline);
+
+        if (annotationsToDelete.size() > 0) {
+            for(Annotation annotation : annotationsToDelete) {
+                log.info(annotation.getId().toString());
+                annotationRepository.removeAllRelationsFromAnnotation(annotation.getId());
+            }
+
+            annotationRepository.deleteAll(annotationsToDelete);
+        }
+    }
 
     public Annotation createAnnotation(AnnotationDTO annotationDTO) throws IOException, CustomExceptions {
         Annotation annotation = new Annotation(annotationDTO);

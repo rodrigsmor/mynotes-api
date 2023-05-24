@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 public interface AnnotationService {
-    void excludeNotesThatHaveReachedDeadline();
     ResponseEntity<ResponseDTO> getAnnotation(Authentication authentication, Long noteId);
     ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, AnnotationDTO annotationDTO);
     ResponseEntity<ResponseDTO> deleteAnnotation(Authentication authentication, Long noteId, Boolean isPermanent);
