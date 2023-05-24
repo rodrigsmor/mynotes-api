@@ -71,6 +71,8 @@ public class AnnotationServiceImplementation implements AnnotationService {
             Annotation annotation = annotationRepository.findById(noteId).orElseThrow(() -> new Exception("A anotação informada não existe"));
 
             if (isPermanent) {
+                user.getAnnotations().remove(annotation);
+                userRepository.saveAndFlush(user);
                 annotationRepository.delete(annotation);
                 responseDTO.setMessage("A anotação foi excluída permanentemente. Desse modo, não será possível o recuperar.");
             } else {
