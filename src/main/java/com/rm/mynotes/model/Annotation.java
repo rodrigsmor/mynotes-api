@@ -43,6 +43,10 @@ public class Annotation {
     @NotNull
     private OffsetDateTime createdAt;
 
+    private Boolean isExcluded = false;
+
+    private OffsetDateTime deletionDate;
+
     public Annotation(AnnotationDTO annotationDTO) {
         this.title = annotationDTO.getTitle();
         this.category = annotationDTO.getCategory();

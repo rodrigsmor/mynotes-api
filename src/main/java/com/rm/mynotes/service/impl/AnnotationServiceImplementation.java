@@ -25,8 +25,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -41,7 +43,6 @@ import java.util.Objects;
 public class AnnotationServiceImplementation implements AnnotationService {
     @Autowired
     public CommonFunctions commonFunctions;
-
     @Autowired
     public AnnotationMethods annotationMethods;
     @Autowired
@@ -52,6 +53,39 @@ public class AnnotationServiceImplementation implements AnnotationService {
     public AnnotationRepository annotationRepository;
 
     private final Integer pageElementsSize = 16;
+
+    @Override
+    @Scheduled(cron = "0 0 0 * * *")
+    public void excludeNotesThatHaveReachedDeadline() {
+
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ResponseDTO> deleteAnnotation(Authentication authentication, Long noteId, Boolean isPermanent) {
+        try {
+            ResponseDTO responseDTO = new ResponseDTO();
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+
+            if (userRepository.getAnnotationBelongsToUser(user.getId(), noteId) == 0) throw new Exception("A anotação informada não pertence ao usuário atual!");
+            Annotation annotation = annotationRepository.findById(noteId).orElseThrow(() -> new Exception("A anotação informada não existe"));
+
+            if (isPermanent) {
+                annotationRepository.delete(annotation);
+                responseDTO.setMessage("A anotação foi excluída permanentemente. Desse modo, não será possível o recuperar.");
+            } else {
+                annotation.setDeletionDate(CommonFunctions.getCurrentDatetime());
+                annotation.setIsExcluded(true);
+                responseDTO.setMessage("A anotação foi excluída e movida a sua lixeira.");
+                annotationRepository.saveAndFlush(annotation);
+            }
+
+            responseDTO.setSuccess(true);
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
+    }
 
     @Override
     public ResponseEntity<ResponseDTO> addsAnnotationToCollection(Authentication authentication, Long noteId, Long collectionId) {
@@ -142,7 +176,7 @@ public class AnnotationServiceImplementation implements AnnotationService {
 
             return ResponseEntity.ok().body(responseDTO);
         } catch (Exception exception) {
-            return commonFunctions.errorHandling(exception);
+            return CommonFunctions.errorHandling(exception);
         }
     }
 
@@ -162,7 +196,7 @@ public class AnnotationServiceImplementation implements AnnotationService {
 
             return ResponseEntity.accepted().body(responseDTO);
         } catch (Exception exception) {
-            return commonFunctions.errorHandling(exception);
+            return CommonFunctions.errorHandling(exception);
         }
     }
 
@@ -193,7 +227,7 @@ public class AnnotationServiceImplementation implements AnnotationService {
             
             return ResponseEntity.internalServerError().body(responseDTO);
         } catch (Exception exception) {
-            return commonFunctions.errorHandling(exception);
+            return CommonFunctions.errorHandling(exception);
         }
     }
 

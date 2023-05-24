@@ -14,9 +14,11 @@ import com.rm.mynotes.utils.errors.CustomExceptions;
 import com.rm.mynotes.utils.config.FirebaseConfig;
 import com.rm.mynotes.utils.constants.FileTypes;
 import com.rm.mynotes.utils.dto.requests.AnnotationDTO;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,11 +47,17 @@ public class AnnotationMethods {
     @Autowired
     private FirebaseConfig firebaseConfig;
 
+    @Value("${DEFAULT_NOTES_ICON}")
+    private String DEFAULT_NOTES_ICON;
+
+    @Value("${DEFAULT_NOTES_COVER}")
+    private String DEFAULT_NOTES_COVER;
+
     public Annotation createAnnotation(AnnotationDTO annotationDTO) throws IOException, CustomExceptions {
         Annotation annotation = new Annotation(annotationDTO);
 
-        String coverUrl = this.uploadAnnotationImage(annotationDTO.getCover(), FileTypes.NOTE_COVER);
-        String iconUrl = this.uploadAnnotationImage(annotationDTO.getCover(), FileTypes.NOTE_ICON);
+        String coverUrl = (annotationDTO.getCover() == null) ? DEFAULT_NOTES_COVER : this.uploadAnnotationImage(annotationDTO.getCover(), FileTypes.NOTE_COVER);
+        String iconUrl =  (annotationDTO.getIcon() == null) ? DEFAULT_NOTES_ICON : this.uploadAnnotationImage(annotationDTO.getCover(), FileTypes.NOTE_ICON);
 
         if (coverUrl.equals("error") || iconUrl.equals("error")) throw new CustomExceptions("Erro ao salvar imagem!");
 
