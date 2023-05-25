@@ -20,6 +20,7 @@ import com.rm.mynotes.utils.functions.CommonFunctions;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -34,6 +35,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Data
 @Service
@@ -227,9 +229,8 @@ public class AnnotationServiceImplementation implements AnnotationService {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
             List<Annotation> annotationsDeleted = user.getAnnotations().stream().filter(Annotation::getIsExcluded).toList();
-            ResponseDTO responseDTO = new ResponseDTO("", true, annotationsDeleted);
 
-            return ResponseEntity.ok().body(responseDTO);
+            return ResponseEntity.accepted().body(new ResponseDTO("", true, annotationsDeleted));
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
         }
@@ -237,7 +238,24 @@ public class AnnotationServiceImplementation implements AnnotationService {
 
     @Override
     public ResponseEntity<ResponseDTO> recoverDeletedNote(Authentication authentication, Long noteId) {
-        return null;
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+
+            Annotation annotation = user.getAnnotations()
+                    .stream().filter(note -> Objects.equals(note.getId(), noteId))
+                    .findFirst().orElseThrow(() -> new CustomExceptions("Não existe ou não pertence ao seu usuário."));
+
+            if (!annotation.getIsExcluded()) throw new CustomExceptions("Não há necessidade de recuperar, pois a anotação informada não foi sequer excluída.");
+
+            annotation.setIsExcluded(false);
+            annotation.setDeletionDate(null);
+
+            Annotation annotationUpdated = annotationRepository.save(annotation);
+
+            return ResponseEntity.accepted().body(new ResponseDTO("", true, annotationUpdated));
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
     }
 
     private void handleCollectionAnnotationErrors(Long userId, Long noteId, Long collectionId) throws Exception {
