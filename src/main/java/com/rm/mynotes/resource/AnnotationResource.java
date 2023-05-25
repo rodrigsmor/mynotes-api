@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -24,6 +23,16 @@ import java.util.List;
 @RequestMapping
 public class AnnotationResource {
     private final AnnotationService annotationService;
+
+    @GetMapping(RoutePaths.GET_DELETED_NOTES)
+    public ResponseEntity<ResponseDTO> getDeletedAnnotations(Authentication authentication) {
+        return annotationService.getDeletedNotes(authentication);
+    }
+
+    @PatchMapping(RoutePaths.RECOVER_NOTE)
+    public ResponseEntity<ResponseDTO> recoverDeletedAnnotation(Authentication authentication, @PathVariable("noteId") Long noteId) {
+        return annotationService.recoverDeletedNote(authentication, noteId);
+    }
 
     @PatchMapping(RoutePaths.NOTE_TO_COLLECTION)
     public ResponseEntity<ResponseDTO> addsNoteToCollection(Authentication authentication, @PathVariable("noteId") Long noteId, @PathVariable("collectionId") Long collectionId) {
@@ -55,6 +64,11 @@ public class AnnotationResource {
     public ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, @RequestParam(required = false) MultipartFile cover, @RequestParam(required = false) MultipartFile icon, @RequestParam(value = "data") String data) {
         AnnotationDTO annotationDTO = convertStringIntoObject(data, cover, icon);
         return annotationService.createAnnotation(authentication, annotationDTO);
+    }
+
+    @DeleteMapping(RoutePaths.DELETE_NOTE)
+    public ResponseEntity<ResponseDTO> deleteNote(Authentication authentication, @PathVariable Long noteId, @RequestParam(required = false, name = "isPermanent", defaultValue = "false") Boolean isPermanent) {
+        return annotationService.deleteAnnotation(authentication, noteId, isPermanent);
     }
 
     private AnnotationDTO convertStringIntoObject(String objectString, MultipartFile cover, MultipartFile icon) {
