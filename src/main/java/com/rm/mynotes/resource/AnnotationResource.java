@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -24,6 +23,16 @@ import java.util.List;
 @RequestMapping
 public class AnnotationResource {
     private final AnnotationService annotationService;
+
+    @GetMapping(RoutePaths.GET_DELETED_NOTES)
+    public ResponseEntity<ResponseDTO> getDeletedAnnotations(Authentication authentication) {
+        return annotationService.getDeletedNotes(authentication);
+    }
+
+    @PatchMapping(RoutePaths.RECOVER_NOTE)
+    public ResponseEntity<ResponseDTO> recoverDeletedAnnotation(Authentication authentication, @PathVariable("noteId") Long noteId) {
+        return annotationService.recoverDeletedNote(authentication, noteId);
+    }
 
     @PatchMapping(RoutePaths.NOTE_TO_COLLECTION)
     public ResponseEntity<ResponseDTO> addsNoteToCollection(Authentication authentication, @PathVariable("noteId") Long noteId, @PathVariable("collectionId") Long collectionId) {

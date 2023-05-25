@@ -1,7 +1,5 @@
 package com.rm.mynotes.service.impl;
 
-import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import com.rm.mynotes.model.Annotation;
 import com.rm.mynotes.model.CollectionNotes;
 import com.rm.mynotes.model.UserEntity;
@@ -27,7 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -223,6 +220,24 @@ public class AnnotationServiceImplementation implements AnnotationService {
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
         }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> getDeletedNotes(Authentication authentication) {
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+            List<Annotation> annotationsDeleted = user.getAnnotations().stream().filter(Annotation::getIsExcluded).toList();
+            ResponseDTO responseDTO = new ResponseDTO("", true, annotationsDeleted);
+
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> recoverDeletedNote(Authentication authentication, Long noteId) {
+        return null;
     }
 
     private void handleCollectionAnnotationErrors(Long userId, Long noteId, Long collectionId) throws Exception {
