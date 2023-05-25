@@ -59,7 +59,7 @@ public class AnnotationMethods {
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void excludeNotesThatHaveReachedDeadline() {
-        OffsetDateTime deadline = OffsetDateTime.now();
+        OffsetDateTime deadline = OffsetDateTime.now().minusDays(30);
         List<Annotation> annotationsToDelete = annotationRepository.findByDeletionDateBefore(deadline);
 
         if (annotationsToDelete.size() > 0) {

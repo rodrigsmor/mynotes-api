@@ -180,18 +180,14 @@ public class AnnotationServiceImplementation implements AnnotationService {
 
     @Override
     public ResponseEntity<ResponseDTO> getAnnotation(Authentication authentication, Long noteId) {
-        ResponseDTO responseDTO = new ResponseDTO();
-
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
             boolean belongsToTheUser = user.getAnnotations().stream().anyMatch(annotation -> Objects.equals(annotation.getId(), noteId));
-            if (!belongsToTheUser) throw new Error("A anotação informada não pertence ao seu usuário.");
+            if (!belongsToTheUser) throw new CustomExceptions("A anotação informada não existe ou não pertence ao seu usuário.");
 
             Annotation annotation = annotationRepository.getReferenceById(noteId);
 
-            responseDTO.setSuccess(true);
-            responseDTO.setData(annotation);
-
+            ResponseDTO responseDTO = new ResponseDTO("", true, annotation);
             return ResponseEntity.accepted().body(responseDTO);
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
