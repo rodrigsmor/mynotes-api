@@ -71,6 +71,11 @@ public class AnnotationResource {
         return annotationService.deleteAnnotation(authentication, noteId, isPermanent);
     }
 
+    @DeleteMapping(RoutePaths.EMPTY_TRASH)
+    public ResponseEntity<ResponseDTO> emptyTrash(Authentication authentication) {
+        return annotationService.emptyTrash(authentication);
+    }
+
     private AnnotationDTO convertStringIntoObject(String objectString, MultipartFile cover, MultipartFile icon) {
         ObjectMapper objectMapper = new ObjectMapper();
         AnnotationDTO annotationDTO = null;

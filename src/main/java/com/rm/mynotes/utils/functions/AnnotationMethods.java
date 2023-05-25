@@ -59,6 +59,11 @@ public class AnnotationMethods {
         OffsetDateTime deadline = OffsetDateTime.now().minusDays(30);
         List<Annotation> annotationsToDelete = annotationRepository.findByDeletionDateBefore(deadline);
 
+        deletePermanentlyNotes(annotationsToDelete);
+    }
+
+    @Transactional
+    public void deletePermanentlyNotes(List<Annotation> annotationsToDelete) {
         if (annotationsToDelete.size() > 0) {
             for(Annotation annotation : annotationsToDelete) {
                 log.info(annotation.getId().toString());

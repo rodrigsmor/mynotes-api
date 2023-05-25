@@ -258,6 +258,23 @@ public class AnnotationServiceImplementation implements AnnotationService {
         }
     }
 
+    @Override
+    public ResponseEntity<ResponseDTO> emptyTrash(Authentication authentication) {
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+
+            List<Annotation> annotationsToDelete = user.getAnnotations()
+                    .stream().filter(Annotation::getIsExcluded).toList();
+
+            if(annotationsToDelete.size() == 0) throw new CustomExceptions("A lixeira já esta vazia.");
+            annotationMethods.deletePermanentlyNotes(annotationsToDelete);
+
+            return ResponseEntity.ok().body(new ResponseDTO("A sua lixeira foi limpa completamente.", true, null));
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
+    }
+
     private void handleCollectionAnnotationErrors(Long userId, Long noteId, Long collectionId) throws Exception {
         if (userRepository.getAnnotationBelongsToUser(userId, noteId) == 0) throw new Exception("A anotação informada não pertence ao usuário atual!");
         if (userRepository.getCollectionBelongsToUser(userId, collectionId) == 0) throw new Exception("A coleção informada não pertence ao usuário atual ou não existe!");
