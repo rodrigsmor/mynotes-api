@@ -10,10 +10,7 @@ import com.rm.mynotes.service.mold.AnnotationService;
 import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.constants.OrdinationTypes;
 import com.rm.mynotes.utils.constants.RoutePaths;
-import com.rm.mynotes.utils.dto.payloads.AnnotationSummaryDTO;
-import com.rm.mynotes.utils.dto.payloads.CollectionSummaryDTO;
-import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
-import com.rm.mynotes.utils.dto.payloads.SummaryDeletedNoteDTO;
+import com.rm.mynotes.utils.dto.payloads.*;
 import com.rm.mynotes.utils.dto.requests.AnnotationDTO;
 import com.rm.mynotes.utils.errors.CustomExceptions;
 import com.rm.mynotes.utils.functions.AnnotationMethods;
@@ -182,12 +179,22 @@ public class AnnotationServiceImplementation implements AnnotationService {
     public ResponseEntity<ResponseDTO> getAnnotation(Authentication authentication, Long noteId) {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
-            boolean belongsToTheUser = user.getAnnotations().stream().anyMatch(annotation -> Objects.equals(annotation.getId(), noteId));
-            if (!belongsToTheUser) throw new CustomExceptions("A anotação informada não existe ou não pertence ao seu usuário.");
+            boolean belongsToUser = user.getAnnotations().stream().anyMatch(annotation -> Objects.equals(annotation.getId(), noteId));
+            if (!belongsToUser) throw new CustomExceptions("A anotação informada não existe ou não pertence ao seu usuário.");
 
             Annotation annotation = annotationRepository.getReferenceById(noteId);
+            List<CollectionSummaryDTO> collectionNotes = annotationMethods.getCollectionsThatHaveTheAnnotation(noteId);
 
-            ResponseDTO responseDTO = new ResponseDTO("", true, annotation);
+            AnnotationDetailedDTO annotationDetailedDTO = new AnnotationDetailedDTO(annotation);
+            annotationDetailedDTO.setAnnotationCollections(collectionNotes);
+            ResponseDTO responseDTO = new ResponseDTO("", true, annotationDetailedDTO);
+
+            if (annotation.getIsExcluded()) {
+                DeletedNoteDetailedDTO deletedNote = new DeletedNoteDetailedDTO(annotation);
+                deletedNote.setAnnotationCollections(collectionNotes);
+                responseDTO.setData(deletedNote);
+            }
+
             return ResponseEntity.accepted().body(responseDTO);
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);

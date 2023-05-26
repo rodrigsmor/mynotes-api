@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,8 +39,12 @@ public class AnnotationMethods {
     @Autowired
     private AnnotationRepository annotationRepository;
 
-    @Autowired
     private CollectionRepository collectionRepository;
+
+    @Autowired
+    public AnnotationMethods(CollectionRepository collectionRepository) {
+        this.collectionRepository = collectionRepository;
+    }
 
     @Autowired
     private CommonFunctions commonFunctions;
@@ -115,7 +120,7 @@ public class AnnotationMethods {
     }
 
     public List<CollectionSummaryDTO> getCollectionsThatHaveTheAnnotation(Long annotationId) {
-        List<CollectionNotes> collections = collectionRepository.getCollectionsByAnnotation(annotationId);;
+        List<CollectionNotes> collections = collectionRepository.getCollectionsByAnnotation(annotationId);
 
         return collections.stream().map(CollectionSummaryDTO::new).toList();
     }
