@@ -13,6 +13,7 @@ import com.rm.mynotes.utils.constants.RoutePaths;
 import com.rm.mynotes.utils.dto.payloads.AnnotationSummaryDTO;
 import com.rm.mynotes.utils.dto.payloads.CollectionSummaryDTO;
 import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
+import com.rm.mynotes.utils.dto.payloads.SummaryDeletedNoteDTO;
 import com.rm.mynotes.utils.dto.requests.AnnotationDTO;
 import com.rm.mynotes.utils.errors.CustomExceptions;
 import com.rm.mynotes.utils.functions.AnnotationMethods;
@@ -228,7 +229,7 @@ public class AnnotationServiceImplementation implements AnnotationService {
     public ResponseEntity<ResponseDTO> getDeletedNotes(Authentication authentication) {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
-            List<Annotation> annotationsDeleted = user.getAnnotations().stream().filter(Annotation::getIsExcluded).toList();
+            List<SummaryDeletedNoteDTO> annotationsDeleted = user.getAnnotations().stream().filter(Annotation::getIsExcluded).map(SummaryDeletedNoteDTO::new).toList();
 
             return ResponseEntity.accepted().body(new ResponseDTO("", true, annotationsDeleted));
         } catch (Exception exception) {
