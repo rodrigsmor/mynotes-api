@@ -44,7 +44,6 @@ public class CollectionServiceImplementation implements CollectionService {
     @Autowired
     private CollectionMethods collectionMethods;
     private final CollectionRepository collectionRepository;
-    private final Integer pageElementsSize = 16;
 
     @Override
     public ResponseEntity<ResponseDTO> getPinnedCollections(Authentication authentication) {
@@ -71,6 +70,7 @@ public class CollectionServiceImplementation implements CollectionService {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
 
+            int pageElementsSize = 16;
             PageRequest pageRequest = PageRequest.of(currentPage, pageElementsSize);
             List<CollectionSummaryDTO> collections = collectionMethods.sortAndFilterCollections(user, ordination, categories, orderBy);
 
@@ -97,7 +97,9 @@ public class CollectionServiceImplementation implements CollectionService {
             CollectionSummaryDTO collectionSummaryDTO = new CollectionSummaryDTO(collection);
             collectionSummaryDTO.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collection.getId()));
 
-            Set<AnnotationSummaryDTO> annotations = collection.getAnnotations().stream().map(AnnotationSummaryDTO::new).collect(Collectors.toSet());
+            Set<AnnotationSummaryDTO> annotations = collection.getAnnotations()
+                    .stream().filter(annotation -> !annotation.getIsExcluded())
+                    .map(AnnotationSummaryDTO::new).collect(Collectors.toSet());
 
             Map<String, Object> data = new HashMap<>();
             data.put("annotations", annotations);

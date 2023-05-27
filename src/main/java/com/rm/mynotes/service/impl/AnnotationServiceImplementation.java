@@ -92,6 +92,7 @@ public class AnnotationServiceImplementation implements AnnotationService {
             Annotation annotation = annotationRepository.getReferenceById(noteId);
             CollectionNotes collection = collectionRepository.getReferencedById(collectionId);
 
+            if(annotation.getIsExcluded()) throw new Exception("A anotação não existe.");
             if (collectionRepository.existsOnCollection(noteId, collectionId) > 0) throw new Exception("A anotação já foi adicionada a coleção.");
             handleCollectionAnnotationErrors(user.getId(), noteId, collectionId);
 
