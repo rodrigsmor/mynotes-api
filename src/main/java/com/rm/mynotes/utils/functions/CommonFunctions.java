@@ -1,19 +1,15 @@
 package com.rm.mynotes.utils.functions;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rm.mynotes.model.UserEntity;
 import com.rm.mynotes.repository.UserRepository;
 import com.rm.mynotes.utils.constants.FileTypes;
 import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
-import com.rm.mynotes.utils.dto.requests.AnnotationDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

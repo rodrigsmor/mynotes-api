@@ -1,14 +1,10 @@
 package com.rm.mynotes.utils.dto.payloads;
 
-import com.rm.mynotes.model.Annotation;
+import com.rm.mynotes.model.Note;
 import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.functions.AnnotationMethods;
-import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AnnotationDetailedDTO {
+public class NoteDetailedDTO {
     private Long id;
     private String title;
     private String description;
@@ -29,16 +25,16 @@ public class AnnotationDetailedDTO {
     private OffsetDateTime createdAt;
     private List<CollectionSummaryDTO> annotationCollections = new ArrayList<>();
 
-    public AnnotationDetailedDTO(Annotation annotation) {
+    public NoteDetailedDTO(Note note) {
         AnnotationMethods annotationMethods = new AnnotationMethods();
 
-        this.id = annotation.getId();
-        this.icon = annotation.getIcon();
-        this.cover = annotation.getCover();
-        this.title = annotation.getTitle();
-        this.category = annotation.getCategory();
-        this.createdAt = annotation.getCreatedAt();
-        this.lastUpdate = annotation.getLastUpdate();
-        this.description = annotation.getDescription();
+        this.id = note.getId();
+        this.icon = note.getIcon();
+        this.cover = note.getCover();
+        this.title = note.getTitle();
+        this.category = note.getCategory();
+        this.createdAt = note.getCreatedAt();
+        this.lastUpdate = note.getLastUpdate();
+        this.description = note.getDescription();
     }
 }

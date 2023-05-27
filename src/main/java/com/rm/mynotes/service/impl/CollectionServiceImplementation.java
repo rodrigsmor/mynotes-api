@@ -8,7 +8,7 @@ import com.rm.mynotes.service.mold.CollectionService;
 import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.constants.OrdinationTypes;
 import com.rm.mynotes.utils.constants.RoutePaths;
-import com.rm.mynotes.utils.dto.payloads.AnnotationSummaryDTO;
+import com.rm.mynotes.utils.dto.payloads.NoteSummaryDTO;
 import com.rm.mynotes.utils.dto.payloads.CollectionSummaryDTO;
 import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
 import com.rm.mynotes.utils.dto.requests.CollectionDTO;
@@ -55,7 +55,7 @@ public class CollectionServiceImplementation implements CollectionService {
             collectionSummary.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collection.getId()));
 
             Map<String, Object> data = new HashMap<>();
-            data.put("annotations", collection.getAnnotations());
+            data.put("annotations", collection.getNotes());
             data.put("collection", collectionSummary);
 
             ResponseDTO responseDTO = new ResponseDTO("", true, data);
@@ -97,9 +97,9 @@ public class CollectionServiceImplementation implements CollectionService {
             CollectionSummaryDTO collectionSummaryDTO = new CollectionSummaryDTO(collection);
             collectionSummaryDTO.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collection.getId()));
 
-            Set<AnnotationSummaryDTO> annotations = collection.getAnnotations()
+            Set<NoteSummaryDTO> annotations = collection.getNotes()
                     .stream().filter(annotation -> !annotation.getIsExcluded())
-                    .map(AnnotationSummaryDTO::new).collect(Collectors.toSet());
+                    .map(NoteSummaryDTO::new).collect(Collectors.toSet());
 
             Map<String, Object> data = new HashMap<>();
             data.put("annotations", annotations);
@@ -150,7 +150,7 @@ public class CollectionServiceImplementation implements CollectionService {
 
             collectionRepository.deleteRelatedUserCollections(collectionId);
 
-            collection.setAnnotations(new ArrayList<>());
+            collection.setNotes(new ArrayList<>());
             collectionRepository.delete(collection);
 
             responseDTO.setSuccess(true);

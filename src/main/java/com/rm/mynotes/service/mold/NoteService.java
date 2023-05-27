@@ -3,18 +3,18 @@ package com.rm.mynotes.service.mold;
 import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.constants.OrdinationTypes;
 import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
-import com.rm.mynotes.utils.dto.requests.AnnotationDTO;
+import com.rm.mynotes.utils.dto.requests.NoteDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
-public interface AnnotationService {
+public interface NoteService {
     ResponseEntity<ResponseDTO> emptyTrash(Authentication authentication);
     ResponseEntity<ResponseDTO> getDeletedNotes(Authentication authentication);
     ResponseEntity<ResponseDTO> getAnnotation(Authentication authentication, Long noteId);
     ResponseEntity<ResponseDTO> recoverDeletedNote(Authentication authentication, Long noteId);
-    ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, AnnotationDTO annotationDTO);
+    ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, NoteDTO noteDTO);
     ResponseEntity<ResponseDTO> deleteAnnotation(Authentication authentication, Long noteId, Boolean isPermanent);
     ResponseEntity<ResponseDTO> addsAnnotationToCollection(Authentication authentication, Long noteId, Long collectionId);
     ResponseEntity<ResponseDTO> removeAnnotationFromCollection(Authentication authentication, Long noteId, Long collectionId);
