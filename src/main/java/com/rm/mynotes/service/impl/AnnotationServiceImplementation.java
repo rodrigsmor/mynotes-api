@@ -257,6 +257,7 @@ public class AnnotationServiceImplementation implements AnnotationService {
 
             annotation.setIsExcluded(false);
             annotation.setDeletionDate(null);
+            annotation.setLastUpdate(CommonFunctions.getCurrentDatetime());
 
             Annotation annotationUpdated = annotationRepository.save(annotation);
 
