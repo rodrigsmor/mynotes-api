@@ -9,14 +9,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AnnotationDTO {
+public class NoteDTO {
     private String title = "";
     private String description = "";
     private CategoryTypes category = CategoryTypes.OTHER;
     private MultipartFile cover;
     private MultipartFile icon;
 
-    public AnnotationDTO(String title, String description, CategoryTypes category) {
+    public NoteDTO(String title, String description, CategoryTypes category) {
         this.title = title;
         this.description = description;
         this.category = category;

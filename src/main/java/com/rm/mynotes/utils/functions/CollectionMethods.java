@@ -9,10 +9,8 @@ import com.rm.mynotes.utils.config.FirebaseConfig;
 import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.constants.FileTypes;
 import com.rm.mynotes.utils.constants.OrdinationTypes;
-import com.rm.mynotes.utils.dto.payloads.AnnotationSummaryDTO;
 import com.rm.mynotes.utils.dto.payloads.CollectionSummaryDTO;
 import com.rm.mynotes.utils.dto.requests.CollectionDTO;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +59,8 @@ public class CollectionMethods {
         return collectionDTO;
     }
 
-    public Integer getAmountOfAnnotationsInCollection(Long collectionId) {
-        return collectionRepository.getAmountOfAnnotationsInCollection(collectionId);
+    public Integer getAmountOfNotesInCollection(Long collectionId) {
+        return collectionRepository.getAmountOfNotesInCollection(collectionId);
     }
 
     public List<CollectionSummaryDTO> sortAndFilterCollections(UserEntity user, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy) {

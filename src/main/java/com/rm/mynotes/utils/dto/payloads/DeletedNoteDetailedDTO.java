@@ -1,6 +1,6 @@
 package com.rm.mynotes.utils.dto.payloads;
 
-import com.rm.mynotes.model.Annotation;
+import com.rm.mynotes.model.Note;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,13 +9,13 @@ import java.time.OffsetDateTime;
 
 @Getter
 @Setter
-public class DeletedNoteDetailedDTO extends AnnotationDetailedDTO {
+public class DeletedNoteDetailedDTO extends NoteDetailedDTO {
     private Long remainingDays;
     private OffsetDateTime deletionDate;
 
-    public DeletedNoteDetailedDTO(Annotation annotation) {
-        super(annotation);
-        this.deletionDate = annotation.getDeletionDate();
+    public DeletedNoteDetailedDTO(Note note) {
+        super(note);
+        this.deletionDate = note.getDeletionDate();
         updateRemainingDays();
     }
 

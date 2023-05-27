@@ -1,6 +1,6 @@
 package com.rm.mynotes.utils.dto.requests;
 
-import com.rm.mynotes.model.Annotation;
+import com.rm.mynotes.model.Note;
 import com.rm.mynotes.utils.constants.CategoryTypes;
 import lombok.*;
 
@@ -18,5 +18,5 @@ public class CollectionDTO {
     private Boolean isPinned;
     private Boolean isFavorite = false;
     private CategoryTypes category;
-    private List<Annotation> annotations = new ArrayList<>();
+    private List<Note> notes = new ArrayList<>();
 }

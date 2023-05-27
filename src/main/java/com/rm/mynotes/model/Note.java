@@ -1,7 +1,7 @@
 package com.rm.mynotes.model;
 
 import com.rm.mynotes.utils.constants.CategoryTypes;
-import com.rm.mynotes.utils.dto.requests.AnnotationDTO;
+import com.rm.mynotes.utils.dto.requests.NoteDTO;
 import com.rm.mynotes.utils.functions.CommonFunctions;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "notes")
-public class Annotation {
+public class Note {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,10 +47,10 @@ public class Annotation {
 
     private OffsetDateTime deletionDate;
 
-    public Annotation(AnnotationDTO annotationDTO) {
-        this.title = annotationDTO.getTitle();
-        this.category = annotationDTO.getCategory();
-        this.description = annotationDTO.getDescription();
+    public Note(NoteDTO noteDTO) {
+        this.title = noteDTO.getTitle();
+        this.category = noteDTO.getCategory();
+        this.description = noteDTO.getDescription();
         this.createdAt = CommonFunctions.getCurrentDatetime();
         this.lastUpdate = CommonFunctions.getCurrentDatetime();
     }
