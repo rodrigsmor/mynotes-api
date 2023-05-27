@@ -13,7 +13,7 @@ import com.rm.mynotes.utils.constants.RoutePaths;
 import com.rm.mynotes.utils.dto.payloads.*;
 import com.rm.mynotes.utils.dto.requests.NoteDTO;
 import com.rm.mynotes.utils.errors.CustomExceptions;
-import com.rm.mynotes.utils.functions.AnnotationMethods;
+import com.rm.mynotes.utils.functions.NoteMethods;
 import com.rm.mynotes.utils.functions.CommonFunctions;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class NoteServiceImplementation implements NoteService {
     @Autowired
     public CommonFunctions commonFunctions;
     @Autowired
-    public AnnotationMethods annotationMethods;
+    public NoteMethods noteMethods;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -53,12 +53,12 @@ public class NoteServiceImplementation implements NoteService {
 
     @Override
     @Transactional
-    public ResponseEntity<ResponseDTO> deleteAnnotation(Authentication authentication, Long noteId, Boolean isPermanent) {
+    public ResponseEntity<ResponseDTO> deleteNote(Authentication authentication, Long noteId, Boolean isPermanent) {
         try {
             ResponseDTO responseDTO = new ResponseDTO();
             UserEntity user = commonFunctions.getCurrentUser(authentication);
 
-            if (userRepository.getAnnotationBelongsToUser(user.getId(), noteId) == 0) throw new Exception("A anotação informada não pertence ao usuário atual!");
+            if (userRepository.getNoteBelongsToUser(user.getId(), noteId) == 0) throw new Exception("A anotação informada não pertence ao usuário atual!");
             Note note = noteRepository.findById(noteId).orElseThrow(() -> new Exception("A anotação informada não existe"));
 
             if (isPermanent) {
@@ -81,7 +81,7 @@ public class NoteServiceImplementation implements NoteService {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO> addsAnnotationToCollection(Authentication authentication, Long noteId, Long collectionId) {
+    public ResponseEntity<ResponseDTO> addsNoteToCollection(Authentication authentication, Long noteId, Long collectionId) {
         ResponseDTO responseDTO = new ResponseDTO();
 
         try {
@@ -92,7 +92,7 @@ public class NoteServiceImplementation implements NoteService {
 
             if(note.getIsExcluded()) throw new Exception("A anotação não existe.");
             if (collectionRepository.existsOnCollection(noteId, collectionId) > 0) throw new Exception("A anotação já foi adicionada a coleção.");
-            handleCollectionAnnotationErrors(user.getId(), noteId, collectionId);
+            handleCollectionNoteErrors(user.getId(), noteId, collectionId);
 
             List<Note> collectionNotes = collection.getNotes();
             collectionNotes.add(note);
@@ -100,7 +100,7 @@ public class NoteServiceImplementation implements NoteService {
             collection.setNotes(collectionNotes);
 
             CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(collection));
-            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collectionUpdated.getId()));
+            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collectionUpdated.getId()));
 
             HashMap<String, Object> data = new HashMap<>();
 
@@ -117,7 +117,7 @@ public class NoteServiceImplementation implements NoteService {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO> removeAnnotationFromCollection(Authentication authentication, Long noteId, Long collectionId) {
+    public ResponseEntity<ResponseDTO> removeNoteFromCollection(Authentication authentication, Long noteId, Long collectionId) {
         ResponseDTO responseDTO = new ResponseDTO();
 
         try {
@@ -125,7 +125,7 @@ public class NoteServiceImplementation implements NoteService {
             Note note = noteRepository.getReferenceById(noteId);
             CollectionNotes collection = collectionRepository.getReferencedById(collectionId);
 
-            handleCollectionAnnotationErrors(user.getId(), noteId, collectionId);
+            handleCollectionNoteErrors(user.getId(), noteId, collectionId);
             if (collectionRepository.existsOnCollection(noteId, collectionId) == 0) throw new Exception("A anotação não existe na coleção informada.");
 
             List<Note> collectionNotes = collection.getNotes();
@@ -134,7 +134,7 @@ public class NoteServiceImplementation implements NoteService {
             collection.setNotes(collectionNotes);
 
             CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(collection));
-            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collectionUpdated.getId()));
+            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collectionUpdated.getId()));
 
             HashMap<String, Object> data = new HashMap<>();
             data.put("collection", collectionUpdated);
@@ -150,23 +150,23 @@ public class NoteServiceImplementation implements NoteService {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO> getAllAnnotations(Authentication authentication, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, Integer currentPage, String endDate, String startDate) {
+    public ResponseEntity<ResponseDTO> getAllNotes(Authentication authentication, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, Integer currentPage, String endDate, String startDate) {
         ResponseDTO responseDTO = new ResponseDTO();
 
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
 
             PageRequest pageRequest = PageRequest.of(currentPage, pageElementsSize);
-            List<NoteSummaryDTO> annotations = annotationMethods.sortAndFilterAnnotations(user, ordination, categories, orderBy, endDate, startDate);
+            List<NoteSummaryDTO> notes = noteMethods.sortAndFilterNotes(user, ordination, categories, orderBy, endDate, startDate);
 
             int startIndex = (int) pageRequest.getOffset();
-            int endIndex = Math.min(startIndex + pageRequest.getPageSize(), annotations.size());
-            List<NoteSummaryDTO> pageElements = annotations.subList(startIndex, endIndex);
+            int endIndex = Math.min(startIndex + pageRequest.getPageSize(), notes.size());
+            List<NoteSummaryDTO> pageElements = notes.subList(startIndex, endIndex);
 
-            Page<NoteSummaryDTO> paginatedAnnotations = new PageImpl<>(pageElements, pageRequest, annotations.size());
+            Page<NoteSummaryDTO> paginatedNotes = new PageImpl<>(pageElements, pageRequest, notes.size());
 
             responseDTO.setSuccess(true);
-            responseDTO.setData(paginatedAnnotations);
+            responseDTO.setData(paginatedNotes);
 
             return ResponseEntity.ok().body(responseDTO);
         } catch (Exception exception) {
@@ -175,22 +175,22 @@ public class NoteServiceImplementation implements NoteService {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO> getAnnotation(Authentication authentication, Long noteId) {
+    public ResponseEntity<ResponseDTO> getNote(Authentication authentication, Long noteId) {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
-            boolean belongsToUser = user.getNotes().stream().anyMatch(annotation -> Objects.equals(annotation.getId(), noteId));
+            boolean belongsToUser = user.getNotes().stream().anyMatch(note -> Objects.equals(note.getId(), noteId));
             if (!belongsToUser) throw new CustomExceptions("A anotação informada não existe ou não pertence ao seu usuário.");
 
             Note note = noteRepository.getReferenceById(noteId);
-            List<CollectionSummaryDTO> collectionNotes = annotationMethods.getCollectionsThatHaveTheAnnotation(noteId);
+            List<CollectionSummaryDTO> collectionNotes = noteMethods.getCollectionsThatHaveTheNote(noteId);
 
             NoteDetailedDTO noteDetailedDTO = new NoteDetailedDTO(note);
-            noteDetailedDTO.setAnnotationCollections(collectionNotes);
+            noteDetailedDTO.setNoteCollections(collectionNotes);
             ResponseDTO responseDTO = new ResponseDTO("", true, noteDetailedDTO);
 
             if (note.getIsExcluded()) {
                 DeletedNoteDetailedDTO deletedNote = new DeletedNoteDetailedDTO(note);
-                deletedNote.setAnnotationCollections(collectionNotes);
+                deletedNote.setNoteCollections(collectionNotes);
                 responseDTO.setData(deletedNote);
             }
 
@@ -201,14 +201,14 @@ public class NoteServiceImplementation implements NoteService {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, NoteDTO noteDTO) {
+    public ResponseEntity<ResponseDTO> createNote(Authentication authentication, NoteDTO noteDTO) {
         ResponseDTO responseDTO = new ResponseDTO();
 
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
             List<Note> notes = user.getNotes();
 
-            Note noteCreated = annotationMethods.createAnnotation(noteDTO);
+            Note noteCreated = noteMethods.createNote(noteDTO);
 
             notes.add(noteCreated);
             user.setNotes(notes);
@@ -235,9 +235,9 @@ public class NoteServiceImplementation implements NoteService {
     public ResponseEntity<ResponseDTO> getDeletedNotes(Authentication authentication) {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
-            List<SummaryDeletedNoteDTO> annotationsDeleted = user.getNotes().stream().filter(Note::getIsExcluded).map(SummaryDeletedNoteDTO::new).toList();
+            List<SummaryDeletedNoteDTO> notesDeleted = user.getNotes().stream().filter(Note::getIsExcluded).map(SummaryDeletedNoteDTO::new).toList();
 
-            return ResponseEntity.accepted().body(new ResponseDTO("", true, annotationsDeleted));
+            return ResponseEntity.accepted().body(new ResponseDTO("", true, notesDeleted));
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
         }
@@ -271,11 +271,11 @@ public class NoteServiceImplementation implements NoteService {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
 
-            List<Note> annotationsToDelete = user.getNotes()
+            List<Note> notesToDelete = user.getNotes()
                     .stream().filter(Note::getIsExcluded).toList();
 
-            if(annotationsToDelete.size() == 0) throw new CustomExceptions("A lixeira já esta vazia.");
-            annotationMethods.deletePermanentlyNotes(annotationsToDelete);
+            if(notesToDelete.size() == 0) throw new CustomExceptions("A lixeira já esta vazia.");
+            noteMethods.deletePermanentlyNotes(notesToDelete);
 
             return ResponseEntity.ok().body(new ResponseDTO("A sua lixeira foi limpa completamente.", true, null));
         } catch (Exception exception) {
@@ -283,8 +283,8 @@ public class NoteServiceImplementation implements NoteService {
         }
     }
 
-    private void handleCollectionAnnotationErrors(Long userId, Long noteId, Long collectionId) throws Exception {
-        if (userRepository.getAnnotationBelongsToUser(userId, noteId) == 0) throw new Exception("A anotação informada não pertence ao usuário atual!");
+    private void handleCollectionNoteErrors(Long userId, Long noteId, Long collectionId) throws Exception {
+        if (userRepository.getNoteBelongsToUser(userId, noteId) == 0) throw new Exception("A anotação informada não pertence ao usuário atual!");
         if (userRepository.getCollectionBelongsToUser(userId, collectionId) == 0) throw new Exception("A coleção informada não pertence ao usuário atual ou não existe!");
     }
 }

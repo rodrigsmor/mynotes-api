@@ -14,8 +14,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
     UserEntity getReferenceByEmail(String email);
 
-    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM user_annotations WHERE user_id = :userId AND annotation_id = :noteId ;", nativeQuery = true)
-    Long getAnnotationBelongsToUser(@Param("userId") Long userId, @Param("noteId") Long noteId);
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM user_notes WHERE user_id = :userId AND note_id = :noteId ;", nativeQuery = true)
+    Long getNoteBelongsToUser(@Param("userId") Long userId, @Param("noteId") Long noteId);
 
     @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM user_collections WHERE user_id = :userId AND collection_id = :collectionId ;", nativeQuery = true)
     Long getCollectionBelongsToUser(@Param("userId") Long userId, @Param("collectionId") Long collectionId);

@@ -31,7 +31,7 @@ import java.util.*;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AnnotationMethods {
+public class NoteMethods {
     @Autowired
     private UserRepository userRepository;
 
@@ -41,7 +41,7 @@ public class AnnotationMethods {
     private CollectionRepository collectionRepository;
 
     @Autowired
-    public AnnotationMethods(CollectionRepository collectionRepository) {
+    public NoteMethods(CollectionRepository collectionRepository) {
         this.collectionRepository = collectionRepository;
     }
 
@@ -61,28 +61,28 @@ public class AnnotationMethods {
     @Transactional
     public void excludeNotesThatHaveReachedDeadline() {
         OffsetDateTime deadline = OffsetDateTime.now().minusDays(30);
-        List<Note> annotationsToDelete = noteRepository.findByDeletionDateBefore(deadline);
+        List<Note> notesToDelete = noteRepository.findByDeletionDateBefore(deadline);
 
-        deletePermanentlyNotes(annotationsToDelete);
+        deletePermanentlyNotes(notesToDelete);
     }
 
     @Transactional
-    public void deletePermanentlyNotes(List<Note> annotationsToDelete) {
-        if (annotationsToDelete.size() > 0) {
-            for(Note note : annotationsToDelete) {
+    public void deletePermanentlyNotes(List<Note> notesToDelete) {
+        if (notesToDelete.size() > 0) {
+            for(Note note : notesToDelete) {
                 log.info(note.getId().toString());
-                noteRepository.removeAllRelationsFromAnnotation(note.getId());
+                noteRepository.removeAllRelationsFromNote(note.getId());
             }
 
-            noteRepository.deleteAll(annotationsToDelete);
+            noteRepository.deleteAll(notesToDelete);
         }
     }
 
-    public Note createAnnotation(NoteDTO noteDTO) throws IOException, CustomExceptions {
+    public Note createNote(NoteDTO noteDTO) throws IOException, CustomExceptions {
         Note note = new Note(noteDTO);
 
-        String coverUrl = (noteDTO.getCover() == null) ? DEFAULT_NOTES_COVER : this.uploadAnnotationImage(noteDTO.getCover(), FileTypes.NOTE_COVER);
-        String iconUrl =  (noteDTO.getIcon() == null) ? DEFAULT_NOTES_ICON : this.uploadAnnotationImage(noteDTO.getCover(), FileTypes.NOTE_ICON);
+        String coverUrl = (noteDTO.getCover() == null) ? DEFAULT_NOTES_COVER : this.uploadNoteImage(noteDTO.getCover(), FileTypes.NOTE_COVER);
+        String iconUrl =  (noteDTO.getIcon() == null) ? DEFAULT_NOTES_ICON : this.uploadNoteImage(noteDTO.getCover(), FileTypes.NOTE_ICON);
 
         if (coverUrl.equals("error") || iconUrl.equals("error")) throw new CustomExceptions("Erro ao salvar imagem!");
 
@@ -92,39 +92,39 @@ public class AnnotationMethods {
         return noteRepository.save(note);
     }
 
-    public List<NoteSummaryDTO> sortAndFilterAnnotations(UserEntity user, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, String endDateString, String startDateString) throws ClassCastException, ParseException {
-        List<NoteSummaryDTO> userAnnotations = new java.util.ArrayList<>(user.getNotes().stream().filter(annotation -> !annotation.getIsExcluded()).map(NoteSummaryDTO::new).toList());
+    public List<NoteSummaryDTO> sortAndFilterNotes(UserEntity user, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, String endDateString, String startDateString) throws ClassCastException, ParseException {
+        List<NoteSummaryDTO> userNotes = new java.util.ArrayList<>(user.getNotes().stream().filter(note -> !note.getIsExcluded()).map(NoteSummaryDTO::new).toList());
 
-        if(ordination.equals("DESC")) Collections.reverse(userAnnotations);
+        if(ordination.equals("DESC")) Collections.reverse(userNotes);
 
         switch (orderBy) {
-            case title -> userAnnotations.sort(Comparator.comparing(NoteSummaryDTO::getTitle));
-            case lastUpdate -> userAnnotations.sort(Comparator.comparing(NoteSummaryDTO::getLastUpdate));
-            case createdAt -> userAnnotations.sort(Comparator.comparing(NoteSummaryDTO::getCreatedAt));
+            case title -> userNotes.sort(Comparator.comparing(NoteSummaryDTO::getTitle));
+            case lastUpdate -> userNotes.sort(Comparator.comparing(NoteSummaryDTO::getLastUpdate));
+            case createdAt -> userNotes.sort(Comparator.comparing(NoteSummaryDTO::getCreatedAt));
         }
 
-        if(categories != null) userAnnotations = userAnnotations.stream().filter(noteSummary -> categories.stream().anyMatch(category -> category.name().equals(noteSummary.getCategory().name()))).toList();
+        if(categories != null) userNotes = userNotes.stream().filter(noteSummary -> categories.stream().anyMatch(category -> category.name().equals(noteSummary.getCategory().name()))).toList();
 
         if(endDateString != null && !endDateString.isEmpty()) {
             Date endDate = CommonFunctions.convertStringToDate(endDateString);
-            userAnnotations = userAnnotations.stream().filter(annotation -> endDate.toInstant().isAfter(annotation.getLastUpdate().toInstant())).toList();
+            userNotes = userNotes.stream().filter(note -> endDate.toInstant().isAfter(note.getLastUpdate().toInstant())).toList();
         }
 
         if(startDateString != null && !startDateString.isEmpty()) {
             Date startDate = CommonFunctions.convertStringToDate(startDateString);
-            userAnnotations = userAnnotations.stream().filter(annotation -> startDate.toInstant().isBefore(annotation.getLastUpdate().toInstant())).toList();
+            userNotes = userNotes.stream().filter(note -> startDate.toInstant().isBefore(note.getLastUpdate().toInstant())).toList();
         }
 
-        return userAnnotations;
+        return userNotes;
     }
 
-    public List<CollectionSummaryDTO> getCollectionsThatHaveTheAnnotation(Long annotationId) {
-        List<CollectionNotes> collections = collectionRepository.getCollectionsByAnnotation(annotationId);
+    public List<CollectionSummaryDTO> getCollectionsThatHaveTheNote(Long noteId) {
+        List<CollectionNotes> collections = collectionRepository.getCollectionsByNotes(noteId);
 
         return collections.stream().map(CollectionSummaryDTO::new).toList();
     }
 
-    private String uploadAnnotationImage(MultipartFile file, FileTypes type) throws IOException {
+    private String uploadNoteImage(MultipartFile file, FileTypes type) throws IOException {
         HashMap<String, Object> uploadedImage = firebaseConfig.uploadImage(file, type);
         return (Boolean) uploadedImage.get("success") ? (String) uploadedImage.get("imageUrl") : "error";
     }

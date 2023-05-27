@@ -15,10 +15,10 @@ public interface CollectionRepository extends JpaRepository<CollectionNotes, Lon
     Long existsOnCollection(@Param("noteId") Long noteId, @Param("collectionId") Long collectionId);
 
     @Query(value = "SELECT COUNT(*) FROM collection_notes WHERE collection_id = :collectionId ;", nativeQuery = true)
-    Integer getAmountOfAnnotationsInCollection(@Param("collectionId") Long collectionId);
+    Integer getAmountOfNotesInCollection(@Param("collectionId") Long collectionId);
 
     @Query(value = "SELECT * FROM collections INNER JOIN collection_notes ON collection_notes.collection_id = collections.id WHERE collection_notes.note_id = :noteId ;", nativeQuery = true)
-    List<CollectionNotes> getCollectionsByAnnotation(@Param("noteId") Long annotationId);
+    List<CollectionNotes> getCollectionsByNotes(@Param("noteId") Long notesId);
 
     @Modifying
     @Query(value = "DELETE FROM user_collections uc WHERE uc.collection_id = :collectionId", nativeQuery = true)

@@ -20,11 +20,11 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     void removeCollectionNotesRelations(@Param("noteId") Long noteId);
 
     @Modifying
-    @Query(value = "DELETE FROM user_annotations WHERE annotation_id = :noteId", nativeQuery = true)
-    void removeUserAnnotationsRelations(@Param("noteId") Long noteId);
+    @Query(value = "DELETE FROM user_notes WHERE note_id = :noteId", nativeQuery = true)
+    void removeUserNotesRelations(@Param("noteId") Long noteId);
 
-    default void removeAllRelationsFromAnnotation(Long noteId) {
+    default void removeAllRelationsFromNote(Long noteId) {
         removeCollectionNotesRelations(noteId);
-        removeUserAnnotationsRelations(noteId);
+        removeUserNotesRelations(noteId);
     }
 }

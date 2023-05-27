@@ -2,7 +2,7 @@ package com.rm.mynotes.utils.dto.payloads;
 
 import com.rm.mynotes.model.Note;
 import com.rm.mynotes.utils.constants.CategoryTypes;
-import com.rm.mynotes.utils.functions.AnnotationMethods;
+import com.rm.mynotes.utils.functions.NoteMethods;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -23,10 +23,10 @@ public class NoteDetailedDTO {
     private String cover;
     private OffsetDateTime lastUpdate;
     private OffsetDateTime createdAt;
-    private List<CollectionSummaryDTO> annotationCollections = new ArrayList<>();
+    private List<CollectionSummaryDTO> noteCollections = new ArrayList<>();
 
     public NoteDetailedDTO(Note note) {
-        AnnotationMethods annotationMethods = new AnnotationMethods();
+        NoteMethods noteMethods = new NoteMethods();
 
         this.id = note.getId();
         this.icon = note.getIcon();

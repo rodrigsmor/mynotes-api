@@ -52,10 +52,10 @@ public class CollectionServiceImplementation implements CollectionService {
 
             CollectionNotes collection = user.getCollections().stream().filter(CollectionNotes::getIsPinned).findFirst().get();
             CollectionSummaryDTO collectionSummary = new CollectionSummaryDTO(collection);
-            collectionSummary.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collection.getId()));
+            collectionSummary.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collection.getId()));
 
             Map<String, Object> data = new HashMap<>();
-            data.put("annotations", collection.getNotes());
+            data.put("notes", collection.getNotes());
             data.put("collection", collectionSummary);
 
             ResponseDTO responseDTO = new ResponseDTO("", true, data);
@@ -95,14 +95,14 @@ public class CollectionServiceImplementation implements CollectionService {
 
             CollectionNotes collection = collectionRepository.getReferencedById(id);
             CollectionSummaryDTO collectionSummaryDTO = new CollectionSummaryDTO(collection);
-            collectionSummaryDTO.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collection.getId()));
+            collectionSummaryDTO.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collection.getId()));
 
-            Set<NoteSummaryDTO> annotations = collection.getNotes()
-                    .stream().filter(annotation -> !annotation.getIsExcluded())
+            Set<NoteSummaryDTO> notes = collection.getNotes()
+                    .stream().filter(note -> !note.getIsExcluded())
                     .map(NoteSummaryDTO::new).collect(Collectors.toSet());
 
             Map<String, Object> data = new HashMap<>();
-            data.put("annotations", annotations);
+            data.put("notes", notes);
             data.put("collection", collectionSummaryDTO);
 
             ResponseDTO responseDTO = new ResponseDTO("", true, data);
@@ -126,7 +126,7 @@ public class CollectionServiceImplementation implements CollectionService {
             existingCollection.setCategory(Objects.nonNull(collectionDTO.getCategory()) ? collectionDTO.getCategory() : existingCollection.getCategory());
 
             CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(existingCollection));
-            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfAnnotationsInCollection(collectionUpdated.getId()));
+            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collectionUpdated.getId()));
 
             ResponseDTO responseDTO = new ResponseDTO("Coleção atualizada com sucesso.", true, collectionUpdated);
             return ResponseEntity.ok().body(responseDTO);

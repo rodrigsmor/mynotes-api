@@ -49,8 +49,8 @@ public class UserEntity implements UserDetails {
     private Role role;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(name = "user_annotations", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "annotation_id", referencedColumnName = "id")
+    @JoinTable(name = "user_notes", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "note_id", referencedColumnName = "id")
     )
     private List<Note> notes = new ArrayList<>();
 

@@ -12,11 +12,11 @@ import java.util.List;
 public interface NoteService {
     ResponseEntity<ResponseDTO> emptyTrash(Authentication authentication);
     ResponseEntity<ResponseDTO> getDeletedNotes(Authentication authentication);
-    ResponseEntity<ResponseDTO> getAnnotation(Authentication authentication, Long noteId);
+    ResponseEntity<ResponseDTO> getNote(Authentication authentication, Long noteId);
     ResponseEntity<ResponseDTO> recoverDeletedNote(Authentication authentication, Long noteId);
-    ResponseEntity<ResponseDTO> createAnnotation(Authentication authentication, NoteDTO noteDTO);
-    ResponseEntity<ResponseDTO> deleteAnnotation(Authentication authentication, Long noteId, Boolean isPermanent);
-    ResponseEntity<ResponseDTO> addsAnnotationToCollection(Authentication authentication, Long noteId, Long collectionId);
-    ResponseEntity<ResponseDTO> removeAnnotationFromCollection(Authentication authentication, Long noteId, Long collectionId);
-    ResponseEntity<ResponseDTO> getAllAnnotations(Authentication authentication, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, Integer currentPage, String endDate, String startDate);
+    ResponseEntity<ResponseDTO> createNote(Authentication authentication, NoteDTO noteDTO);
+    ResponseEntity<ResponseDTO> deleteNote(Authentication authentication, Long noteId, Boolean isPermanent);
+    ResponseEntity<ResponseDTO> addsNoteToCollection(Authentication authentication, Long noteId, Long collectionId);
+    ResponseEntity<ResponseDTO> removeNoteFromCollection(Authentication authentication, Long noteId, Long collectionId);
+    ResponseEntity<ResponseDTO> getAllNotes(Authentication authentication, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, Integer currentPage, String endDate, String startDate);
 }

@@ -59,8 +59,8 @@ public class CollectionMethods {
         return collectionDTO;
     }
 
-    public Integer getAmountOfAnnotationsInCollection(Long collectionId) {
-        return collectionRepository.getAmountOfAnnotationsInCollection(collectionId);
+    public Integer getAmountOfNotesInCollection(Long collectionId) {
+        return collectionRepository.getAmountOfNotesInCollection(collectionId);
     }
 
     public List<CollectionSummaryDTO> sortAndFilterCollections(UserEntity user, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy) {
