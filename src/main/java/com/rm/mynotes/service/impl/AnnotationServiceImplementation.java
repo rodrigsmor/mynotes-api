@@ -10,9 +10,7 @@ import com.rm.mynotes.service.mold.AnnotationService;
 import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.constants.OrdinationTypes;
 import com.rm.mynotes.utils.constants.RoutePaths;
-import com.rm.mynotes.utils.dto.payloads.AnnotationSummaryDTO;
-import com.rm.mynotes.utils.dto.payloads.CollectionSummaryDTO;
-import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
+import com.rm.mynotes.utils.dto.payloads.*;
 import com.rm.mynotes.utils.dto.requests.AnnotationDTO;
 import com.rm.mynotes.utils.errors.CustomExceptions;
 import com.rm.mynotes.utils.functions.AnnotationMethods;
@@ -181,12 +179,22 @@ public class AnnotationServiceImplementation implements AnnotationService {
     public ResponseEntity<ResponseDTO> getAnnotation(Authentication authentication, Long noteId) {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
-            boolean belongsToTheUser = user.getAnnotations().stream().anyMatch(annotation -> Objects.equals(annotation.getId(), noteId));
-            if (!belongsToTheUser) throw new CustomExceptions("A anotação informada não existe ou não pertence ao seu usuário.");
+            boolean belongsToUser = user.getAnnotations().stream().anyMatch(annotation -> Objects.equals(annotation.getId(), noteId));
+            if (!belongsToUser) throw new CustomExceptions("A anotação informada não existe ou não pertence ao seu usuário.");
 
             Annotation annotation = annotationRepository.getReferenceById(noteId);
+            List<CollectionSummaryDTO> collectionNotes = annotationMethods.getCollectionsThatHaveTheAnnotation(noteId);
 
-            ResponseDTO responseDTO = new ResponseDTO("", true, annotation);
+            AnnotationDetailedDTO annotationDetailedDTO = new AnnotationDetailedDTO(annotation);
+            annotationDetailedDTO.setAnnotationCollections(collectionNotes);
+            ResponseDTO responseDTO = new ResponseDTO("", true, annotationDetailedDTO);
+
+            if (annotation.getIsExcluded()) {
+                DeletedNoteDetailedDTO deletedNote = new DeletedNoteDetailedDTO(annotation);
+                deletedNote.setAnnotationCollections(collectionNotes);
+                responseDTO.setData(deletedNote);
+            }
+
             return ResponseEntity.accepted().body(responseDTO);
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
@@ -228,7 +236,7 @@ public class AnnotationServiceImplementation implements AnnotationService {
     public ResponseEntity<ResponseDTO> getDeletedNotes(Authentication authentication) {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
-            List<Annotation> annotationsDeleted = user.getAnnotations().stream().filter(Annotation::getIsExcluded).toList();
+            List<SummaryDeletedNoteDTO> annotationsDeleted = user.getAnnotations().stream().filter(Annotation::getIsExcluded).map(SummaryDeletedNoteDTO::new).toList();
 
             return ResponseEntity.accepted().body(new ResponseDTO("", true, annotationsDeleted));
         } catch (Exception exception) {
@@ -249,10 +257,28 @@ public class AnnotationServiceImplementation implements AnnotationService {
 
             annotation.setIsExcluded(false);
             annotation.setDeletionDate(null);
+            annotation.setLastUpdate(CommonFunctions.getCurrentDatetime());
 
             Annotation annotationUpdated = annotationRepository.save(annotation);
 
             return ResponseEntity.accepted().body(new ResponseDTO("", true, annotationUpdated));
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> emptyTrash(Authentication authentication) {
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+
+            List<Annotation> annotationsToDelete = user.getAnnotations()
+                    .stream().filter(Annotation::getIsExcluded).toList();
+
+            if(annotationsToDelete.size() == 0) throw new CustomExceptions("A lixeira já esta vazia.");
+            annotationMethods.deletePermanentlyNotes(annotationsToDelete);
+
+            return ResponseEntity.ok().body(new ResponseDTO("A sua lixeira foi limpa completamente.", true, null));
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
         }

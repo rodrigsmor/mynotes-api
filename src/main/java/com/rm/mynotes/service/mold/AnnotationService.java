@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 public interface AnnotationService {
+    ResponseEntity<ResponseDTO> emptyTrash(Authentication authentication);
     ResponseEntity<ResponseDTO> getDeletedNotes(Authentication authentication);
     ResponseEntity<ResponseDTO> getAnnotation(Authentication authentication, Long noteId);
     ResponseEntity<ResponseDTO> recoverDeletedNote(Authentication authentication, Long noteId);

@@ -5,6 +5,7 @@ import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.functions.AnnotationMethods;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -39,6 +40,5 @@ public class AnnotationDetailedDTO {
         this.createdAt = annotation.getCreatedAt();
         this.lastUpdate = annotation.getLastUpdate();
         this.description = annotation.getDescription();
-        this.annotationCollections = annotationMethods.getCollectionsThatHaveTheAnnotation(annotation.getId());
     }
 }
