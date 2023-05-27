@@ -94,7 +94,7 @@ public class AnnotationMethods {
     }
 
     public List<AnnotationSummaryDTO> sortAndFilterAnnotations(UserEntity user, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, String endDateString, String startDateString) throws ClassCastException, ParseException {
-        List<AnnotationSummaryDTO> userAnnotations = new java.util.ArrayList<>(user.getAnnotations().stream().map(AnnotationSummaryDTO::new).toList());
+        List<AnnotationSummaryDTO> userAnnotations = new java.util.ArrayList<>(user.getAnnotations().stream().filter(annotation -> !annotation.getIsExcluded()).map(AnnotationSummaryDTO::new).toList());
 
         if(ordination.equals("DESC")) Collections.reverse(userAnnotations);
 
