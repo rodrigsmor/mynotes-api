@@ -88,15 +88,16 @@ public class CollectionServiceImplementation implements CollectionService {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
 
-            CollectionNotes collection = user.getCollections().stream().filter(CollectionNotes::getIsPinned).findFirst().get();
-            CollectionSummaryDTO collectionSummary = new CollectionSummaryDTO(collection);
-            collectionSummary.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collection.getId()));
+            Set<CollectionSummaryDTO> collections = user.getCollections().stream()
+                    .filter(CollectionNotes::getIsPinned)
+                    .map(collection -> {
+                        CollectionSummaryDTO collectionSummary = new CollectionSummaryDTO(collection);
+                        collectionSummary.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collection.getId()));
+                        return collectionSummary;
+                    })
+                    .collect(Collectors.toSet());
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("notes", collection.getNotes());
-            data.put("collection", collectionSummary);
-
-            ResponseDTO responseDTO = new ResponseDTO("", true, data);
+            ResponseDTO responseDTO = new ResponseDTO("", true, collections);
             return ResponseEntity.ok().body(responseDTO);
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
