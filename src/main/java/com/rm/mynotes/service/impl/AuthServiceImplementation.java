@@ -9,9 +9,11 @@ import com.rm.mynotes.utils.dto.payloads.AuthResponseDTO;
 import com.rm.mynotes.utils.dto.payloads.ResponseDTO;
 import com.rm.mynotes.utils.dto.requests.LoginDTO;
 import com.rm.mynotes.utils.dto.requests.SignupDTO;
+import com.rm.mynotes.utils.functions.CollectionMethods;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +33,9 @@ public class AuthServiceImplementation implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+
+    @Autowired
+    private CollectionMethods collectionMethods;
 
     @Override
     public ResponseEntity<ResponseDTO> login(LoginDTO loginDTO) {
@@ -73,11 +78,12 @@ public class AuthServiceImplementation implements AuthService {
                 return ResponseEntity.badRequest().body(responseDTO);
             }
 
-            var user = UserEntity.builder()
+            UserEntity user = UserEntity.builder()
                     .fullName(signupDTO.getFullName())
                     .email(signupDTO.getEmail())
                     .password(passwordEncoder.encode(signupDTO.getPassword()))
                     .role(Role.USER)
+                    .collections(collectionMethods.createFavorite(signupDTO.getFullName()))
                     .build();
 
             userRepository.save(user);

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +33,16 @@ public class CollectionResource {
     @GetMapping(RoutePaths.GET_PINNED_COLLECTIONS)
     public ResponseEntity<ResponseDTO> getPinnedCollection(Authentication authentication) {
         return collectionService.getPinnedCollections(authentication);
+    }
+
+    @PatchMapping(RoutePaths.PIN_COLLECTION)
+    public ResponseEntity<ResponseDTO> pinCollection(Authentication authentication, @PathVariable("collectionId") Long collectionId) {
+        return collectionService.pinCollection(authentication, collectionId);
+    }
+
+    @DeleteMapping(RoutePaths.PIN_COLLECTION)
+    public ResponseEntity<ResponseDTO> unpinCollection(Authentication authentication, @PathVariable("collectionId") Long collectionId) {
+        return collectionService.unpinCollection(authentication, collectionId);
     }
 
     @GetMapping(RoutePaths.GET_ALL_COLLECTIONS)

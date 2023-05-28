@@ -3,10 +3,7 @@ package com.rm.mynotes.model;
 import com.rm.mynotes.utils.constants.CategoryTypes;
 import com.rm.mynotes.utils.dto.requests.CollectionDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -15,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "collections")

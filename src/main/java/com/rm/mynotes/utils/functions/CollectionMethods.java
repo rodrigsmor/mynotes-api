@@ -34,6 +34,25 @@ public class CollectionMethods {
     @Value("${DEFAULT_COLLECTION_COVER}")
     private String DEFAULT_COLLECTION_COVER;
 
+    @Value("${DEFAULT_FAVORITE_COVER}")
+    private String DEFAULT_FAVORITE_COVER;
+
+    public Set<CollectionNotes> createFavorite(String name) {
+        CollectionNotes userFavorite = CollectionNotes.builder()
+                .isFavorite(true)
+                .isPinned(true)
+                .name("Favoritos de " + name)
+                .notes(new ArrayList<>())
+                .coverUrl(DEFAULT_FAVORITE_COVER)
+                .category(CategoryTypes.PERSONAL)
+                .build();
+
+        Set<CollectionNotes> userNotes = new HashSet<>();
+        userNotes.add(collectionRepository.save(userFavorite));
+
+        return userNotes;
+    }
+
     public CollectionNotes createCollections(CollectionDTO collectionDTO, MultipartFile cover) throws IOException {
         CollectionNotes collection = new CollectionNotes(collectionDTO);
 

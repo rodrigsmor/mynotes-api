@@ -35,13 +35,23 @@ public class NoteResource {
     }
 
     @PatchMapping(RoutePaths.NOTE_TO_COLLECTION)
-    public ResponseEntity<ResponseDTO> addsNoteToCollection(Authentication authentication, @PathVariable("noteId") Long noteId, @PathVariable("collectionId") Long collectionId) {
-        return noteService.addsNoteToCollection(authentication, noteId, collectionId);
+    public ResponseEntity<ResponseDTO> addsNoteToCollection(
+            Authentication authentication,
+            @PathVariable("noteId") Long noteId,
+            @PathVariable(value = "collectionId", required = false) Long collectionId,
+            @RequestParam(value = "isFavorite", defaultValue = "false", required = false) Boolean isFavorite
+    ) {
+        return noteService.addsNoteToCollection(authentication, noteId, collectionId, isFavorite);
     }
 
     @DeleteMapping(RoutePaths.NOTE_TO_COLLECTION)
-    public  ResponseEntity<ResponseDTO> removeNoteFromCollection(Authentication authentication, @PathVariable("noteId") Long noteId, @PathVariable("collectionId") Long collectionId) {
-        return noteService.removeNoteFromCollection(authentication, noteId, collectionId);
+    public  ResponseEntity<ResponseDTO> removeNoteFromCollection(
+            Authentication authentication,
+            @PathVariable("noteId") Long noteId,
+            @PathVariable("collectionId") Long collectionId,
+            @RequestParam(value = "isFavorite", defaultValue = "false", required = false) Boolean isFavorite
+    ) {
+        return noteService.removeNoteFromCollection(authentication, noteId, collectionId, isFavorite);
     }
 
     @GetMapping(RoutePaths.GET_ALL_NOTES)

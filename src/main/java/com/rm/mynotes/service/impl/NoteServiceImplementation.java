@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -81,52 +82,49 @@ public class NoteServiceImplementation implements NoteService {
     }
 
     @Override
-    public ResponseEntity<ResponseDTO> addsNoteToCollection(Authentication authentication, Long noteId, Long collectionId) {
-        ResponseDTO responseDTO = new ResponseDTO();
-
+    public ResponseEntity<ResponseDTO> addsNoteToCollection(Authentication authentication, Long noteId, Long collectionId, Boolean isFavorite) {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
 
             Note note = noteRepository.getReferenceById(noteId);
-            CollectionNotes collection = collectionRepository.getReferencedById(collectionId);
+            CollectionNotes collection = !isFavorite ? collectionRepository.getReferencedById(collectionId) : user.getCollections()
+                    .stream().filter(CollectionNotes::getIsFavorite)
+                    .findFirst()
+                    .orElseThrow(() -> new Error("A coleção favorita não existe."));
 
             if(note.getIsExcluded()) throw new Exception("A anotação não existe.");
-            if (collectionRepository.existsOnCollection(noteId, collectionId) > 0) throw new Exception("A anotação já foi adicionada a coleção.");
-            handleCollectionNoteErrors(user.getId(), noteId, collectionId);
+            if (collectionRepository.existsOnCollection(noteId, collection.getId()) > 0) throw new Exception("A anotação já foi adicionada a coleção.");
+
+            handleCollectionNoteErrors(user.getId(), noteId, collection.getId());
 
             List<Note> collectionNotes = collection.getNotes();
             collectionNotes.add(note);
-
             collection.setNotes(collectionNotes);
 
             CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(collection));
             collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collectionUpdated.getId()));
 
             HashMap<String, Object> data = new HashMap<>();
-
             data.put("collection", collectionUpdated);
 
-            responseDTO.setData(data);
-            responseDTO.setSuccess(true);
-            responseDTO.setMessage("A adição foi realizada com êxito!");
-
-            return ResponseEntity.accepted().body(responseDTO);
+            return ResponseEntity.accepted().body(new ResponseDTO(isFavorite ? "A anotação foi adicionada aos favoritos." : "A adição foi realizada com êxito!", true, data));
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
         }
     }
 
     @Override
-    public ResponseEntity<ResponseDTO> removeNoteFromCollection(Authentication authentication, Long noteId, Long collectionId) {
-        ResponseDTO responseDTO = new ResponseDTO();
-
+    public ResponseEntity<ResponseDTO> removeNoteFromCollection(Authentication authentication, Long noteId, Long collectionId, Boolean isFavorite) {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
             Note note = noteRepository.getReferenceById(noteId);
-            CollectionNotes collection = collectionRepository.getReferencedById(collectionId);
+            CollectionNotes collection = !isFavorite ? collectionRepository.getReferencedById(collectionId) : user.getCollections()
+                    .stream().filter(CollectionNotes::getIsFavorite)
+                    .findFirst()
+                    .orElseThrow(() -> new Error("A coleção favorita não existe."));
 
-            handleCollectionNoteErrors(user.getId(), noteId, collectionId);
-            if (collectionRepository.existsOnCollection(noteId, collectionId) == 0) throw new Exception("A anotação não existe na coleção informada.");
+            handleCollectionNoteErrors(user.getId(), noteId, collection.getId());
+            if (collectionRepository.existsOnCollection(noteId, collection.getId()) == 0) throw new Exception("A anotação não existe na coleção informada.");
 
             List<Note> collectionNotes = collection.getNotes();
             collectionNotes.remove(note);
@@ -139,11 +137,7 @@ public class NoteServiceImplementation implements NoteService {
             HashMap<String, Object> data = new HashMap<>();
             data.put("collection", collectionUpdated);
 
-            responseDTO.setData(data);
-            responseDTO.setSuccess(true);
-            responseDTO.setMessage("A anotação foi removida da coleção.");
-
-            return ResponseEntity.ok().body(responseDTO);
+            return ResponseEntity.ok().body(new ResponseDTO(isFavorite ? "A anotação foi removida dos favoritos" : "A anotação foi removida da coleção.", true, data));
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
         }

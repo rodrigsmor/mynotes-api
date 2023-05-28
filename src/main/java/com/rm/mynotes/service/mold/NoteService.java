@@ -16,7 +16,7 @@ public interface NoteService {
     ResponseEntity<ResponseDTO> recoverDeletedNote(Authentication authentication, Long noteId);
     ResponseEntity<ResponseDTO> createNote(Authentication authentication, NoteDTO noteDTO);
     ResponseEntity<ResponseDTO> deleteNote(Authentication authentication, Long noteId, Boolean isPermanent);
-    ResponseEntity<ResponseDTO> addsNoteToCollection(Authentication authentication, Long noteId, Long collectionId);
-    ResponseEntity<ResponseDTO> removeNoteFromCollection(Authentication authentication, Long noteId, Long collectionId);
+    ResponseEntity<ResponseDTO> addsNoteToCollection(Authentication authentication, Long noteId, Long collectionId, Boolean isFavorite);
+    ResponseEntity<ResponseDTO> removeNoteFromCollection(Authentication authentication, Long noteId, Long collectionId, Boolean isFavorite);
     ResponseEntity<ResponseDTO> getAllNotes(Authentication authentication, String ordination, List<CategoryTypes> categories, OrdinationTypes orderBy, Integer currentPage, String endDate, String startDate);
 }

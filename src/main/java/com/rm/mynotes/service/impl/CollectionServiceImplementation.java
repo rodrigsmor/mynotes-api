@@ -46,19 +46,58 @@ public class CollectionServiceImplementation implements CollectionService {
     private final CollectionRepository collectionRepository;
 
     @Override
+    public ResponseEntity<ResponseDTO> pinCollection(Authentication authentication, Long collectionId) {
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+            CollectionNotes collection = collectionRepository.getReferencedById(collectionId);
+
+            if (userRepository.getCollectionBelongsToUser(user.getId(), collectionId) == 0) throw new Exception("A coleção informada não pertence ao usuário atual ou não existe!");
+            if (collection.getIsPinned()) throw new Exception("A coleção já está fixada.");
+            collection.setIsPinned(true);
+
+            CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(collection));
+            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collection.getId()));
+
+            return ResponseEntity.accepted().body(new ResponseDTO("Coleção fixada", true, collectionUpdated));
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> unpinCollection(Authentication authentication, Long collectionId) {
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+            CollectionNotes collection = collectionRepository.getReferencedById(collectionId);
+
+            if (userRepository.getCollectionBelongsToUser(user.getId(), collectionId) == 0) throw new Exception("A coleção informada não pertence ao usuário atual ou não existe!");
+            if (!collection.getIsPinned()) throw new Exception("A coleção não está fixada.");
+            collection.setIsPinned(false);
+
+            CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(collection));
+            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collection.getId()));
+
+            return ResponseEntity.accepted().body(new ResponseDTO("Coleção não está mais fixada.", true, collectionUpdated));
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
+    }
+
+    @Override
     public ResponseEntity<ResponseDTO> getPinnedCollections(Authentication authentication) {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);
 
-            CollectionNotes collection = user.getCollections().stream().filter(CollectionNotes::getIsPinned).findFirst().get();
-            CollectionSummaryDTO collectionSummary = new CollectionSummaryDTO(collection);
-            collectionSummary.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collection.getId()));
+            Set<CollectionSummaryDTO> collections = user.getCollections().stream()
+                    .filter(CollectionNotes::getIsPinned)
+                    .map(collection -> {
+                        CollectionSummaryDTO collectionSummary = new CollectionSummaryDTO(collection);
+                        collectionSummary.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collection.getId()));
+                        return collectionSummary;
+                    })
+                    .collect(Collectors.toSet());
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("notes", collection.getNotes());
-            data.put("collection", collectionSummary);
-
-            ResponseDTO responseDTO = new ResponseDTO("", true, data);
+            ResponseDTO responseDTO = new ResponseDTO("", true, collections);
             return ResponseEntity.ok().body(responseDTO);
         } catch (Exception exception) {
             return CommonFunctions.errorHandling(exception);
