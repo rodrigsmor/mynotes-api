@@ -1,0 +1,33 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_USERNAME}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "3302:3306"
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - FIREBASE_SERVICE_ACCOUNT_KEY=${FIREBASE_SERVICE_ACCOUNT_KEY}
+      - FIREBASE_DOWNLOAD_URL=${FIREBASE_DOWNLOAD_URL}
+      - FIREBASE_STORAGE_PROJECT_ID=${FIREBASE_STORAGE_PROJECT_ID}
+      - FIREBASE_BUCKET_NAME=${FIREBASE_BUCKET_NAME}
+      - DEFAULT_FAVORITE_COVER=${DEFAULT_FAVORITE_COVER}
+      - DEFAULT_COLLECTION_COVER=${DEFAULT_COLLECTION_COVER}
+      - DEFAULT_NOTES_COVER=${DEFAULT_NOTES_COVER}
+      - DEFAULT_NOTES_ICON=${DEFAULT_NOTES_ICON}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
