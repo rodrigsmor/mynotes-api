@@ -9,7 +9,7 @@ public class RoutePaths {
     public static final String RECOVER_NOTE = "/api/note/{noteId}/recover";
     public static final String GET_DELETED_NOTES = "/api/notes/trash";
     public static final String DELETE_NOTE = "/api/note/{noteId}/delete";
-    public static final String GET_FAVORITES = "/api/collection/favorites";
+    public static final String USER_FAVORITES = "/api/collection/favorites";
     public static final String GET_ALL_COLLECTIONS = "/api/collections/all";
     public static final String COLLECTION = "/api/collection/{collectionId}";
     public static final String CREATE_NEW_COLLECTION = "/api/collection/new";
