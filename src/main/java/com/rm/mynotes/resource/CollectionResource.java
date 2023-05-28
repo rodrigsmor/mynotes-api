@@ -34,6 +34,11 @@ public class CollectionResource {
         return collectionService.getPinnedCollections(authentication);
     }
 
+    @PatchMapping(RoutePaths.PIN_COLLECTION)
+    public ResponseEntity<ResponseDTO> pinCollection(Authentication authentication, @PathVariable("collectionId") Long collectionId) {
+        return collectionService.pinCollection(authentication, collectionId);
+    }
+
     @GetMapping(RoutePaths.GET_ALL_COLLECTIONS)
     public ResponseEntity<ResponseDTO> getAllCollections(Authentication authentication,
                                                       @RequestParam(required = false, name = "current_page", defaultValue = "0") Integer currentPage,

@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface CollectionService {
     ResponseEntity<ResponseDTO> getPinnedCollections(Authentication authentication);
+    ResponseEntity<ResponseDTO> pinCollection(Authentication authentication, Long collectionId);
     ResponseEntity<ResponseDTO> getCollection(Authentication authentication, Long collectionId);
     ResponseEntity<ResponseDTO> deleteCollection(Authentication authentication, Long collectionId);
     ResponseEntity<ResponseDTO> editCollection(Authentication authentication, Long collectionId, CollectionDTO collectionDTO);

@@ -46,6 +46,25 @@ public class CollectionServiceImplementation implements CollectionService {
     private final CollectionRepository collectionRepository;
 
     @Override
+    public ResponseEntity<ResponseDTO> pinCollection(Authentication authentication, Long collectionId) {
+        try {
+            UserEntity user = commonFunctions.getCurrentUser(authentication);
+            CollectionNotes collection = collectionRepository.getReferencedById(collectionId);
+
+            if (userRepository.getCollectionBelongsToUser(user.getId(), collectionId) == 0) throw new Exception("A coleção informada não pertence ao usuário atual ou não existe!");
+            if (collection.getIsPinned()) throw new Exception("A coleção já está fixada.");
+            collection.setIsPinned(true);
+
+            CollectionSummaryDTO collectionUpdated = new CollectionSummaryDTO(collectionRepository.save(collection));
+            collectionUpdated.setNumberOfNotes(collectionRepository.getAmountOfNotesInCollection(collection.getId()));
+
+            return ResponseEntity.accepted().body(new ResponseDTO("Coleção fixada", true, collectionUpdated));
+        } catch (Exception exception) {
+            return CommonFunctions.errorHandling(exception);
+        }
+    }
+
+    @Override
     public ResponseEntity<ResponseDTO> getPinnedCollections(Authentication authentication) {
         try {
             UserEntity user = commonFunctions.getCurrentUser(authentication);

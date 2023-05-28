@@ -12,6 +12,7 @@ public class RoutePaths {
     public static final String USER_FAVORITES = "/api/collection/favorites";
     public static final String GET_ALL_COLLECTIONS = "/api/collections/all";
     public static final String COLLECTION = "/api/collection/{collectionId}";
+    public static final String PIN_COLLECTION = "/api/collection/{collectionId}/pin";
     public static final String CREATE_NEW_COLLECTION = "/api/collection/new";
     public static final String EMPTY_TRASH = "/api/notes/trash/empty";
     public static final String GET_PINNED_COLLECTIONS = "/api/collection/pinned";
