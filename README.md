@@ -73,6 +73,12 @@ DEFAULT_NOTES_ICON=
 
 ## 🚀 Como rodar?
 
+Já tendo configurado as variáveis de ambiente e também feito as devidas adaptações do Docker, somente irá precisar rodar em seu terminal o comando abaixo:
+
+```
+docker-compose up --build
+```
+
 ---
 
 ## ✨ Recursos
