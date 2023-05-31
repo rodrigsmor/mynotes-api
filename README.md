@@ -1,3 +1,7 @@
+<div align="center">
+    <img src="https://camo.githubusercontent.com/7943347007726a0b0cb33be34990c59a74a5dfeee27bc8376768da1c917163e2/68747470733a2f2f692e6962622e636f2f744c42435956672f566563746f722d312e706e67" alt="MyNotes logo" height="84px" width="84px" align="center" />
+</div>
+
 <h1 align="center">MyNotes - API</h1>
 
 ---
@@ -25,7 +29,7 @@ MyNotes é uma aplicação web de gestão de anotações, no qual o usuário pod
 
 ## 📥 Instalação
 
-Antes de qualquer coisa, você precisa clonar o repositório no seu aparelho local. Já estando no diretório desejado, você somente precisa rodar no seu terminal o seguinte comando: 
+Antes de qualquer coisa, você precisa clonar o repositório no seu aparelho local. Já estando no diretório desejado, você somente precisa rodar no seu terminal o seguinte comando:
 
 ```
 git clone https://github.com/rodrigsmor/mynotes-api.git
@@ -33,9 +37,9 @@ git clone https://github.com/rodrigsmor/mynotes-api.git
 
 ---
 
-## ⚙️ Configuração 
+## ⚙️ Configuração
 
-Para estar apto a rodar a aplicação e testa-la, você precisa fazer algumas configurações iniciais. 
+Para estar apto a rodar a aplicação e testa-la, você precisa fazer algumas configurações iniciais.
 
 Configurando as variáveis de ambientes do seu banco de dados.
 
@@ -53,21 +57,22 @@ JWT_ISSUER=<your-jwt-issuer>
 JWT_SECRET_KEY=<your-secret-key>
 ```
 
-POr fim, precisa fazer as configurações relativas ao seu Google Firebase, para isso, será necessário criar uma conta ou se conectar a uma conta existe e então fazer algumas configurações. Pode encontrar mais informações no seguinte link.
+Por fim, precisa fazer as configurações relativas ao seu Google Firebase, para isso, será necessário criar uma conta ou se conectar a uma conta existente e então fazer algumas configurações. Pode encontrar mais informações no seguinte link.
 
 ```
 FIREBASE_SERVICE_ACCOUNT_KEY=<diretório-do-arquivo-service-json>
-FIREBASE_DOWNLOAD_URL=
-FIREBASE_STORAGE_PROJECT_ID=
-FIREBASE_BUCKET_NAME=om
+FIREBASE_DOWNLOAD_URL=https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media
+FIREBASE_STORAGE_PROJECT_ID=the identificator of your firebase project
+FIREBASE_BUCKET_NAME=the bucket name of your project
 
-# imagens padrões. Eu utilizei imagens armazenadas no Firebase, mas você não precisa utiliza-las
-DEFAULT_FAVORITE_COVER=
-DEFAULT_COLLECTION_COVER=
-DEFAULT_NOTES_COVER=
-DEFAULT_NOTES_ICON=
+# imagens padrões. Atente-se ao fato de que todas essas imagens são URLS.
+DEFAULT_FAVORITE_COVER=<essa deve ser a imagem padrão de capa das coleções de favoritos>
+DEFAULT_COLLECTION_COVER=<essa deve ser a imagem padrão das coleções>
+DEFAULT_NOTES_COVER=<essa deve ser a imagem padrão das anotações>
+DEFAULT_NOTES_ICON=<essa deve ser o icone padrão das anotações>
 ```
 
+Dado essas configurações, muito que provavelmente a aplicação funcionará bem.
 
 ---
 
@@ -84,7 +89,23 @@ docker-compose up --build
 ## ✨ Recursos
 
 - Exclusão automática dos itens na lixeira após 30 dias de sua exclusão, usando o Scheduled do Spring.
-- Notificações: O usuário pode 
+- Notificações: O usuário pode
 
 
 Usar o swagger
+
+---
+
+## 🌎 Links de apoio
+
+- 🔗 Setup do firebase: https://firebase.google.com/docs/admin/setup#java_2
+- 🔗 Install Docker: https://docs.docker.com/engine/install/
+
+---
+
+## 🧑🏾‍💻 Author
+
+<img src="https://avatars.githubusercontent.com/u/78985382?v=4" alt="Profile picture of Rodrigo Moreira"  height="100px" border-radius="100%" />
+
+### Rodrigo Moreira stars
+
