@@ -21,9 +21,9 @@ MyNotes é uma aplicação web de gestão de anotações, no qual o usuário pod
 
 ## 📋 Pré-requisitos
 
-- 🐋 Docker | Versão: X.XX.X
-- 🐳 Docker compose | Versão: X.XX.X
 - 🖇️ Git CLI | qualquer versão
+- 🐋 Docker | Versão: 20.10.21
+- 🐳 Docker compose | Versão: 1.25.0
 
 ---
 
@@ -88,11 +88,10 @@ docker-compose up --build
 
 ## ✨ Recursos
 
+- Armazenamento de documentos no Firebase Storage.
+- Notificação em tempo real utilizando Kafka e WebSocket.
+- Utilização de Swagger para disponibilização da documentação da API.
 - Exclusão automática dos itens na lixeira após 30 dias de sua exclusão, usando o Scheduled do Spring.
-- Notificações: O usuário pode
-
-
-Usar o swagger
 
 ---
 
@@ -100,6 +99,8 @@ Usar o swagger
 
 - 🔗 Setup do firebase: https://firebase.google.com/docs/admin/setup#java_2
 - 🔗 Install Docker: https://docs.docker.com/engine/install/
+- 🔗 Knows docker-compose: https://docs.docker.com/compose/
+- 🔗 Knows Kafka: https://kafka.apache.org/intro
 
 ---
 
@@ -107,5 +108,5 @@ Usar o swagger
 
 <img src="https://avatars.githubusercontent.com/u/78985382?v=4" alt="Profile picture of Rodrigo Moreira"  height="100px" border-radius="100%" />
 
-### Rodrigo Moreira stars
+### Rodrigo Moreira ☁️
 
