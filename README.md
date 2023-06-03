@@ -6,42 +6,41 @@
 
 ---
 
-## 🔭 Visão Geral
+## 🔭 Overview
 
-MyNotes é uma aplicação web de gestão de anotações, no qual o usuário pode gerenciar e organizar suas anotações, através da criação de novas anotações, agrupa-las em diferentes coleções, assim como categoriza-las e modificá-las, de modo a atender suas necessidades.
+MyNotes is a note management web application, in which the users can manage and organize his notes by creating new notes, grouping them into different collections, as well as categorizing and modifying them to suit their needs.
 
-### 🗃 Tecnologias
+### 🗃 Technologies
 
-| ⚒️ Tecnologia | Versão |
-|------------|----------|
-| ☕ Java     | 17.0.0   |
-| 🌱 Spring  | 3.1.0-M2   |
-
----
-
-## 📋 Pré-requisitos
-
-- 🖇️ Git CLI | qualquer versão
-- 🐋 Docker | Versão: 20.10.21
-- 🐳 Docker compose | Versão: 1.25.0
+| ⚒️ Technology | Version  |
+|---------------|----------|
+| ☕ Java        | 17.0.0   |
+| 🌱 Spring     | 3.1.0-M2 |
 
 ---
 
-## 📥 Instalação
+## 📋 Pre-requisites
 
-Antes de qualquer coisa, você precisa clonar o repositório no seu aparelho local. Já estando no diretório desejado, você somente precisa rodar no seu terminal o seguinte comando:
+- 🖇️ Git CLI | Any version
+- 🐋 Docker | Any version (I'm using it from version 20.10.21)
+- 🐳 Docker compose | Any version (I'm using it from version: 1.25.0)
 
+---
+
+## 📥 Installation
+
+First of all, you need to clone the repository on your personal device. Being located in the desired directory, simply run the following command in your terminal:
 ```
 git clone https://github.com/rodrigsmor/mynotes-api.git
 ```
 
 ---
 
-## ⚙️ Configuração
+## ⚙️ Settings
 
-Para estar apto a rodar a aplicação e testa-la, você precisa fazer algumas configurações iniciais.
+To be able to run the application and also test it, you need to make some initial settings.
 
-Configurando as variáveis de ambientes do seu banco de dados.
+setting the environment variables for your database.
 
 ```
 DB_URL=jdbc:mysql://mysql:3306/<your-database-name>
@@ -50,35 +49,36 @@ DB_PASSWORD=<-your-user-database-password>
 DB_DATABASE=<your-database-name>
 ```
 
-Uma vez que as configurações do seu banco de dados estão feitas, agora coloque os valores das variáveis de ambientes relacionadas a segurança (JWT) da sua API. Você pode escolher qualquer valor para ambas as variáveis de ambiente, somente tenha em mente que devem reforçar a segurança de sua API.
+Once the database settings are done, you will now set values for the security environment variables (JWT). You can choose any value for both environment variables, but note that these values should enforce the security of your API.
 
 ```
 JWT_ISSUER=<your-jwt-issuer>
 JWT_SECRET_KEY=<your-secret-key>
 ```
 
-Por fim, precisa fazer as configurações relativas ao seu Google Firebase, para isso, será necessário criar uma conta ou se conectar a uma conta existente e então fazer algumas configurações. Pode encontrar mais informações no seguinte link.
+You now need to make Google Firebase related settings. To do this you will need to create an account or log into an existing account. For more information, please click [here](https://firebase.google.com/docs/storage/web/start).
 
 ```
-FIREBASE_SERVICE_ACCOUNT_KEY=<diretório-do-arquivo-service-json>
+FIREBASE_SERVICE_ACCOUNT_KEY=directory-file-service-json
 FIREBASE_DOWNLOAD_URL=https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media
 FIREBASE_STORAGE_PROJECT_ID=the identificator of your firebase project
 FIREBASE_BUCKET_NAME=the bucket name of your project
 
-# imagens padrões. Atente-se ao fato de que todas essas imagens são URLS.
-DEFAULT_FAVORITE_COVER=<essa deve ser a imagem padrão de capa das coleções de favoritos>
-DEFAULT_COLLECTION_COVER=<essa deve ser a imagem padrão das coleções>
-DEFAULT_NOTES_COVER=<essa deve ser a imagem padrão das anotações>
-DEFAULT_NOTES_ICON=<essa deve ser o icone padrão das anotações>
+# default images. Note that all these images are URLS.
+
+DEFAULT_FAVORITE_COVER=Default Favorite Collection cover Url
+DEFAULT_COLLECTION_COVER=Default Collection Cover Url
+DEFAULT_NOTES_COVER=Default Annotation Cover Url
+DEFAULT_NOTES_ICON=Default Annotation Icon Url
 ```
 
-Dado essas configurações, muito que provavelmente a aplicação funcionará bem.
+With these settings, your application is likely to work well.
 
 ---
 
-## 🚀 Como rodar?
+## 🚀 How to run?
 
-Já tendo configurado as variáveis de ambiente e também feito as devidas adaptações do Docker, somente irá precisar rodar em seu terminal o comando abaixo:
+Having already set the environment variables and made the necessary Docker adaptations, simply run the following command in your terminal:
 
 ```
 docker-compose up --build
@@ -86,18 +86,18 @@ docker-compose up --build
 
 ---
 
-## ✨ Recursos
+## ✨ Features
 
-- Armazenamento de documentos no Firebase Storage.
-- Notificação em tempo real utilizando Kafka e WebSocket.
-- Utilização de Swagger para disponibilização da documentação da API.
-- Exclusão automática dos itens na lixeira após 30 dias de sua exclusão, usando o Scheduled do Spring.
+- Storing files in Firebase storage.
+- Using Swagger to provide API documentation.
+- Real-time notifications using Kafka and WebSocket.
+- Automatic deletion of items in the recycle garbage can after 30 days of their deletion, using Spring Scheduled.
 
 ---
 
-## 🌎 Links de apoio
+## 🌎 Support links
 
-- 🔗 Setup do firebase: https://firebase.google.com/docs/admin/setup#java_2
+- 🔗 Firebase setup: https://firebase.google.com/docs/admin/setup#java_2
 - 🔗 Install Docker: https://docs.docker.com/engine/install/
 - 🔗 Knows docker-compose: https://docs.docker.com/compose/
 - 🔗 Knows Kafka: https://kafka.apache.org/intro
@@ -109,4 +109,4 @@ docker-compose up --build
 <img src="https://avatars.githubusercontent.com/u/78985382?v=4" alt="Profile picture of Rodrigo Moreira"  height="100px" border-radius="100%" />
 
 ### Rodrigo Moreira ☁️
-
+Developed with 💜 by **Rodrigo Moreira** ⌨️🖱️
