@@ -1,5 +1,6 @@
 package com.rm.mynotes.resource;
 
+import com.rm.mynotes.model.Reminder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -13,7 +14,7 @@ public class WebSocketResource {
 
     @MessageMapping("/createReminder")
     @SendTo("/topic/reminders")
-    public Object createEvent(Object reminder) {
+    public Reminder createEvent(Reminder reminder) {
         kafkaTemplate.send("remindersTopic", reminder.toString());
         return reminder;
     }

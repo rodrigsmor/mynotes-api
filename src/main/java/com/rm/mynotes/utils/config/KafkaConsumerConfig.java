@@ -1,5 +1,7 @@
 package com.rm.mynotes.utils.config;
 
+import com.rm.mynotes.model.Notification;
+import com.rm.mynotes.model.Reminder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -14,11 +16,12 @@ public class KafkaConsumerConfig {
 
     @KafkaListener(topics = "remindersTopic", groupId = "group1")
     public void listen(String message) {
-        Object reminder = parseReminder(message);
+        Reminder reminder = parseReminder(message);
+        Notification notification = new Notification();
         messagingTemplate.convertAndSend("/app/topic/notifications", notification);
     }
 
-    private Object parseReminder(String message) {
-        return new Object();
+    private Reminder parseReminder(String message) {
+        return new Reminder();
     }
 }

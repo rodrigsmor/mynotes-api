@@ -1,9 +1,7 @@
 package com.rm.mynotes.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.rm.mynotes.utils.constants.StatusTypes;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -31,4 +29,7 @@ public class Reminder {
 
     @NotNull
     private OffsetDateTime reminderDate;
+
+    @Enumerated(EnumType.STRING)
+    private StatusTypes status;
 }
