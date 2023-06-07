@@ -1,6 +1,7 @@
 package com.rm.mynotes.utils.constants;
 
 public class RoutePaths {
+    public static final String REMINDER = "/app/reminder";
     public static final String LOGIN = "/api/auth/login";
     public static final String SIGNUP = "/api/auth/signup";
     public static final String GET_NOTE = "/api/note/{id}";
