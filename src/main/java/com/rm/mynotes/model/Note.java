@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -40,6 +42,8 @@ public class Note {
     @NotNull
     private OffsetDateTime lastUpdate;
 
+    private List<Reminder> reminders = new ArrayList<>();
+
     @NotNull
     private OffsetDateTime createdAt;
 
@@ -53,5 +57,6 @@ public class Note {
         this.description = noteDTO.getDescription();
         this.createdAt = CommonFunctions.getCurrentDatetime();
         this.lastUpdate = CommonFunctions.getCurrentDatetime();
+        this.reminders = new ArrayList<>();
     }
 }

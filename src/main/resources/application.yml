@@ -12,6 +12,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVERS}
   jpa:
     hibernate:
       ddl-auto: create-drop
