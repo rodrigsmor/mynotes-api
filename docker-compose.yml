@@ -17,6 +17,7 @@ services:
       - KAFKA_ADVERTISED_HOST_NAME=kafka
       - KAFKA_ADVERTISED_PORT=9092
       - KAFKA_CREATE_TOPICS=topic1:1:1
+      - KAFKA_ZOOKEEPER_CONNECT=${KAFKA_ZOOKEEPER_CONNECT}
 
   zookeeper:
     image: wurstmeister/zookeeper
